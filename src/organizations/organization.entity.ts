@@ -1,13 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Office } from '../offices/office.entity'
 
 @Entity()
 export class Organization {
-  @PrimaryGeneratedColumn()
-  id: number
+  @PrimaryGeneratedColumn('uuid')
+  id: string
 
-  @Column({
-    nullable: false,
-    default: ''
-  })
+  @Column({ length: 500 })
   name: string
+
+  @OneToMany(() => Office, (office) => office.organization)
+  offices: Office[]
 }

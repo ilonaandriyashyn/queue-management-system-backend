@@ -17,7 +17,8 @@ export class OrganizationsService {
     return this.organizationsRepository.save(newOrganization)
   }
 
-  async findOrganizationById(id: number) {
+  // TODO needs to be async?
+  async findOrganizationById(id: string) {
     return this.organizationsRepository.findOneBy({ id })
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common'
 import { OrganizationsService } from './organizations.service'
 import { CreateOrganizationDto } from './organizations.dto'
 
@@ -12,7 +12,7 @@ export class OrganizationsController {
   }
 
   @Get(':id')
-  findUsersById(@Param('id', ParseIntPipe) id: number) {
+  findOrganizationById(@Param('id') id: string) {
     return this.organizationsService.findOrganizationById(id)
   }
 
