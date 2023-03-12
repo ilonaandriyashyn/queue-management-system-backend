@@ -14,7 +14,7 @@ export class OfficesService {
   ) {}
 
   findOffices() {
-    return this.officesRepository.find()
+    return this.officesRepository.find({ relations: ['counters', 'counters.services', 'services'] })
   }
 
   async createOffice(office: CreateOfficeDto) {
