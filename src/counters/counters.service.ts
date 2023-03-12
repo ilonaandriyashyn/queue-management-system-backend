@@ -35,9 +35,14 @@ export class CountersService {
     }
     const services: Service[] = []
     for (const serviceId of servicesIds) {
-      const service = await this.servicesService.findServiceById(serviceId)
-      if (service) {
-        services.push(service)
+      try {
+        const service = await this.servicesService.findServiceById(serviceId)
+        if (service) {
+          services.push(service)
+        }
+      } catch (e) {
+        // TODO modify, check for different errors. This error happens when serviceId is not uuid
+        throw new BadRequestException()
       }
     }
     counter.services = services
