@@ -4,11 +4,13 @@ import { AppService } from './app.service'
 import { OrganizationsModule } from './organizations/organizations.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { OfficesModule } from './offices/offices.module'
+import { ServicesModule } from './services/services.module'
 
 @Module({
   imports: [
     OrganizationsModule,
     OfficesModule,
+    ServicesModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

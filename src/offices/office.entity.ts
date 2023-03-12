@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Organization } from '../organizations/organization.entity'
 import { LENGTHS } from '../helpers/validations'
+import { Service } from '../services/service.entity'
 
 @Entity()
 export class Office {
@@ -27,4 +28,7 @@ export class Office {
 
   @ManyToOne(() => Organization, (organization) => organization.offices)
   organization: Organization
+
+  @OneToMany(() => Service, (service) => service.office)
+  services: Service[]
 }
