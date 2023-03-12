@@ -8,6 +8,7 @@ import { OfficesModule } from '../offices/offices.module'
 @Module({
   imports: [TypeOrmModule.forFeature([Service]), OfficesModule],
   controllers: [ServicesController],
-  providers: [ServicesService]
+  providers: [ServicesService],
+  exports: [ServicesService]
 })
 export class ServicesModule {}
