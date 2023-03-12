@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 import { Organization } from '../organizations/organization.entity'
 import { LENGTHS } from '../helpers/validations'
 import { Service } from '../services/service.entity'
+import { Counter } from '../counters/counter.entity'
 
 @Entity()
 export class Office {
@@ -28,6 +29,9 @@ export class Office {
 
   @ManyToOne(() => Organization, (organization) => organization.offices)
   organization: Organization
+
+  @OneToMany(() => Counter, (counter) => counter.office)
+  counters: Counter[]
 
   @OneToMany(() => Service, (service) => service.office)
   services: Service[]

@@ -6,12 +6,14 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { OfficesModule } from './offices/offices.module'
 import { ServicesModule } from './services/services.module'
 import { TicketsModule } from './tickets/tickets.module'
+import { CountersModule } from './counters/counters.module'
 
 @Module({
   imports: [
     OrganizationsModule,
     OfficesModule,
     ServicesModule,
+    CountersModule,
     TicketsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',

@@ -7,7 +7,7 @@ export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
 
   @Get(':id')
-  findOfficeById(@Param('id') id: string) {
+  findServiceById(@Param('id') id: string) {
     return this.servicesService.findServiceById(id)
   }
 

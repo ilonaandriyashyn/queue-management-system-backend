@@ -25,7 +25,7 @@ export class ServicesService {
     return this.servicesRepository.save(newService)
   }
 
-  findServiceById(id: string) {
+  async findServiceById(id: string) {
     return this.servicesRepository.findOneBy({ id })
   }
 }
