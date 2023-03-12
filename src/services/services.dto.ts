@@ -11,3 +11,13 @@ export class CreateServiceDto {
   @IsUUID()
   officeId: string
 }
+
+export class GetServicesDto {
+  @IsNotEmpty()
+  @IsUUID()
+  organizationId: string
+
+  @IsNotEmpty()
+  @IsUUID()
+  officeId: string
+}
