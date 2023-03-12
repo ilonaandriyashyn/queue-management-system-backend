@@ -13,9 +13,9 @@ export class OfficesService {
     private readonly organizationsService: OrganizationsService
   ) {}
 
-  // getOrganizations() {
-  //   return this.organizationsRepository.find()
-  // }
+  findOffices() {
+    return this.officesRepository.find()
+  }
 
   async createOffice(office: CreateOfficeDto) {
     const organization = await this.organizationsService.findOrganizationById(office.organizationId)

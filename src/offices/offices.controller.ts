@@ -6,10 +6,10 @@ import { OfficesService } from './offices.service'
 export class OfficesController {
   constructor(private readonly officesService: OfficesService) {}
 
-  // @Get()
-  // getOffices() {
-  //   return this.organizationsService.getOrganizations()
-  // }
+  @Get()
+  getOffices() {
+    return this.officesService.findOffices()
+  }
 
   @Get(':id')
   findOfficeById(@Param('id') id: string) {
