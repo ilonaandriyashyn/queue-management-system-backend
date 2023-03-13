@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Ticket } from './ticket.entity'
+import { Ticket, TicketState } from './ticket.entity'
 import { Repository } from 'typeorm'
 import { CreateTicketDto } from './tickets.dto'
 import { ServicesService } from '../services/services.service'
@@ -27,5 +27,22 @@ export class TicketsService {
 
   findTicketById(id: string) {
     return this.ticketsRepository.findOneBy({ id })
+  }
+
+  async updateTicketStateToProcessing(id: string) {
+    const ticket = await this.findTicketById(id)
+    if (!ticket) {
+      throw new BadRequestException()
+    }
+    ticket.state = TicketState.PROCESSING
+    return this.ticketsRepository.save(ticket)
+  }
+
+  async removeTicket(id: string) {
+    const ticket = await this.findTicketById(id)
+    if (!ticket || ticket.state !== TicketState.PROCESSING) {
+      throw new BadRequestException()
+    }
+    return this.ticketsRepository.delete(id)
   }
 }
