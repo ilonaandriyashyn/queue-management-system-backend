@@ -15,7 +15,7 @@ export class TicketsService {
 
   async createTicket(ticket: CreateTicketDto) {
     const service = await this.servicesService.findServiceById(ticket.serviceId)
-    if (!service) {
+    if (!service || !service.office || !service.office.organization) {
       throw new BadRequestException()
     }
     const newTicket = this.ticketsRepository.create({
