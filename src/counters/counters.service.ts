@@ -6,6 +6,8 @@ import { CreateCounterDto } from './counters.dto'
 import { OfficesService } from '../offices/offices.service'
 import { Service } from '../services/service.entity'
 import { ServicesService } from '../services/services.service'
+import { TicketsService } from '../tickets/tickets.service'
+import { TicketState } from '../tickets/ticket.entity'
 
 @Injectable()
 export class CountersService {
@@ -13,7 +15,8 @@ export class CountersService {
     @InjectRepository(Counter)
     private readonly countersRepository: Repository<Counter>,
     private readonly officesService: OfficesService,
-    private readonly servicesService: ServicesService
+    private readonly servicesService: ServicesService,
+    private readonly ticketsService: TicketsService
   ) {}
 
   async createCounter(counter: CreateCounterDto) {
@@ -51,5 +54,28 @@ export class CountersService {
 
   findCounterById(id: string) {
     return this.countersRepository.findOneBy({ id })
+  }
+
+  async doneTicket(id: string) {
+    const counter = await this.countersRepository.findOne({ relations: ['ticket'], where: { id } })
+    if (!counter || counter.ticket === null) {
+      throw new BadRequestException()
+    }
+    return this.ticketsService.removeTicket(counter.ticket.id)
+  }
+
+  async nextTicket(id: string) {
+    const counter = await this.countersRepository.findOne({
+      relations: ['ticket', 'services'],
+      where: { id }
+    })
+    if (!counter || counter.ticket !== null) {
+      throw new BadRequestException()
+    }
+    counter.ticket = await this.ticketsService.findNextByServices(counter.services)
+    if (counter.ticket !== null) {
+      counter.ticket.state = TicketState.PROCESSING
+    }
+    return this.countersRepository.save(counter)
   }
 }

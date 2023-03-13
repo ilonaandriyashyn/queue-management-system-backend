@@ -17,4 +17,16 @@ export class CountersController {
   updateServices(@Param('id') id: string, @Body() data: UpdateCounterServicesDto) {
     return this.countersService.setServices(id, data.services)
   }
+
+  @Put(':id/tickets/done')
+  @UsePipes(ValidationPipe)
+  doneTicket(@Param('id') id: string) {
+    return this.countersService.doneTicket(id)
+  }
+
+  @Put(':id/tickets/next')
+  @UsePipes(ValidationPipe)
+  nextTicket(@Param('id') id: string) {
+    return this.countersService.nextTicket(id)
+  }
 }

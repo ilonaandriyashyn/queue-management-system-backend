@@ -19,7 +19,7 @@ export class Counter {
   @JoinTable()
   services: Service[]
 
-  @OneToOne(() => Ticket, (ticket) => ticket.counter, { nullable: true })
+  @OneToOne(() => Ticket, (ticket) => ticket.counter, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
-  ticket: Ticket
+  ticket: Ticket | null
 }
