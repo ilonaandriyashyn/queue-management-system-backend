@@ -63,6 +63,8 @@ export class CountersService {
     return this.ticketsService.removeTicket(counter.ticket.id)
   }
 
+  // It is generated for based on service that counter has, but the services id are different for each office,
+  // so it's ok to just look for tickets based on these services
   async nextTicket(id: string) {
     const counter = await this.countersRepository.findOne({
       relations: ['ticket', 'services'],
