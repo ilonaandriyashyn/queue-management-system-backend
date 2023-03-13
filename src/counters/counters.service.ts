@@ -7,7 +7,6 @@ import { OfficesService } from '../offices/offices.service'
 import { Service } from '../services/service.entity'
 import { ServicesService } from '../services/services.service'
 import { TicketsService } from '../tickets/tickets.service'
-import { TicketState } from '../tickets/ticket.entity'
 
 @Injectable()
 export class CountersService {
@@ -73,9 +72,6 @@ export class CountersService {
       throw new BadRequestException()
     }
     counter.ticket = await this.ticketsService.findNextByServices(counter.services)
-    if (counter.ticket !== null) {
-      counter.ticket.state = TicketState.PROCESSING
-    }
     return this.countersRepository.save(counter)
   }
 }

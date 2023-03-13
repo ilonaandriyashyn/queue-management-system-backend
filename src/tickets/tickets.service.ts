@@ -64,6 +64,8 @@ export class TicketsService {
     const tickets = await this.ticketsRepository.find({ relations: ['service'] })
     for (const t of tickets) {
       if (servicesIds.includes(t.service.id)) {
+        t.state = TicketState.PROCESSING
+        await this.ticketsRepository.save(t)
         return t
       }
     }
