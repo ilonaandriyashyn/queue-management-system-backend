@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { LENGTHS } from '../helpers/validations'
 import { Service } from '../services/service.entity'
+import { Counter } from '../counters/counter.entity'
 
 export enum TicketState {
   CREATED = 'created',
@@ -25,4 +26,8 @@ export class Ticket {
 
   @ManyToOne(() => Service, (service) => service.tickets)
   service: Service
+
+  @OneToOne(() => Counter, (counter) => counter.ticket, { nullable: true })
+  @JoinColumn()
+  counter: Counter
 }

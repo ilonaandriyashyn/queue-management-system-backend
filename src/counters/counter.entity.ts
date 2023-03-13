@@ -1,7 +1,8 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { LENGTHS } from '../helpers/validations'
 import { Service } from '../services/service.entity'
 import { Office } from '../offices/office.entity'
+import { Ticket } from '../tickets/ticket.entity'
 
 @Entity()
 export class Counter {
@@ -17,4 +18,8 @@ export class Counter {
   @ManyToMany(() => Service)
   @JoinTable()
   services: Service[]
+
+  @OneToOne(() => Ticket, (ticket) => ticket.counter, { nullable: true })
+  @JoinColumn()
+  ticket: Ticket
 }
