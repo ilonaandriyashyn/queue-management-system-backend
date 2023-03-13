@@ -47,21 +47,21 @@ export class TicketsService {
     return this.ticketsRepository.delete(id)
   }
 
-  async findByServices(services: Service[]) {
-    const servicesIds = services.map((service) => service.id)
-    const tickets = await this.ticketsRepository.find({ relations: ['service'] })
-    const selectedTickets = []
-    for (const t of tickets) {
-      if (servicesIds.includes(t.service.id)) {
-        selectedTickets.push(t)
-      }
-    }
-    return tickets
-  }
+  // async findByServices(services: Service[]) {
+  //   const servicesIds = services.map((service) => service.id)
+  //   const tickets = await this.ticketsRepository.find({ relations: ['service'] })
+  //   const selectedTickets = []
+  //   for (const t of tickets) {
+  //     if (servicesIds.includes(t.service.id)) {
+  //       selectedTickets.push(t)
+  //     }
+  //   }
+  //   return tickets
+  // }
 
   async findNextByServices(services: Service[]) {
     const servicesIds = services.map((service) => service.id)
-    const tickets = await this.ticketsRepository.find({ relations: ['service'] })
+    const tickets = await this.ticketsRepository.find({ relations: ['service'], order: { dateCreated: 'ASC' } })
     for (const t of tickets) {
       if (servicesIds.includes(t.service.id)) {
         t.state = TicketState.PROCESSING
