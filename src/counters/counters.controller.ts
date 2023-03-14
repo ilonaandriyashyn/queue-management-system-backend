@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common'
 import { CreateCounterDto, UpdateCounterServicesDto } from './counters.dto'
 import { CountersService } from './counters.service'
 
@@ -28,5 +28,12 @@ export class CountersController {
   @UsePipes(ValidationPipe)
   nextTicket(@Param('id') id: string) {
     return this.countersService.nextTicket(id)
+  }
+
+  // TODO weird behavior when id is not uuid. Should just return error
+  @Get(':id/tickets/current')
+  @UsePipes(ValidationPipe)
+  async getCurrentTicket(@Param('id') id: string) {
+    return await this.countersService.getCurrentTicket(id)
   }
 }

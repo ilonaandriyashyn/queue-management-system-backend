@@ -67,13 +67,27 @@ export class CountersService {
   // so it's ok to just look for tickets based on these services
   async nextTicket(id: string) {
     const counter = await this.countersRepository.findOne({
-      relations: ['ticket', 'services'],
+      relations: ['ticket', 'ticket.service', 'services'],
       where: { id }
     })
     if (!counter || counter.ticket !== null) {
       throw new BadRequestException()
     }
     counter.ticket = await this.ticketsService.findNextByServices(counter.services)
-    return this.countersRepository.save(counter)
+    await this.countersRepository.save(counter)
+    return counter.ticket
+  }
+
+  // TODO ticket number
+  async getCurrentTicket(id: string) {
+    console.log(id)
+    const counter = await this.countersRepository.findOne({
+      relations: ['ticket', 'ticket.service'],
+      where: { id }
+    })
+    if (!counter) {
+      throw new BadRequestException()
+    }
+    return counter.ticket
   }
 }
