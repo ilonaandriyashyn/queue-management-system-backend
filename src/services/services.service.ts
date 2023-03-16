@@ -1,29 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Service } from './service.entity'
 import { Repository } from 'typeorm'
-import { CreateServiceDto } from './services.dto'
-import { OfficesService } from '../offices/offices.service'
+import { CreateServiceDto } from '../offices/offices.dto'
+import { Office } from '../offices/office.entity'
 
 @Injectable()
 export class ServicesService {
   constructor(
     @InjectRepository(Service)
-    private readonly servicesRepository: Repository<Service>,
-    private readonly officesService: OfficesService
+    private readonly servicesRepository: Repository<Service>
   ) {}
-
-  async createService(service: CreateServiceDto) {
-    const office = await this.officesService.findOfficeById(service.officeId)
-    if (!office) {
-      throw new BadRequestException()
-    }
-    const newService = this.servicesRepository.create({
-      name: service.name,
-      office
-    })
-    return this.servicesRepository.save(newService)
-  }
 
   async findServiceById(id: string) {
     return this.servicesRepository.findOneBy({ id })
@@ -42,5 +29,13 @@ export class ServicesService {
       .where('office.id=:officeId', { officeId })
       .andWhere('organization.id=:organizationId', { organizationId })
       .getMany()
+  }
+
+  async createService(office: Office, service: CreateServiceDto) {
+    const newService = this.servicesRepository.create({
+      name: service.name,
+      office
+    })
+    return this.servicesRepository.save(newService)
   }
 }

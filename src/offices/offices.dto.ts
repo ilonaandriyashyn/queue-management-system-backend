@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator'
+import { IsArray, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator'
 import { LENGTHS } from '../helpers/validations'
 
 export class CreateOfficeDto {
@@ -36,4 +36,17 @@ export class CreateOfficeDto {
   @IsNotEmpty()
   @IsUUID()
   organizationId: string
+}
+
+export class UpdateOfficeServicesDto {
+  // uuid of services
+  @IsArray()
+  services: string[]
+}
+
+export class CreateServiceDto {
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(LENGTHS.STANDARD)
+  name: string
 }
