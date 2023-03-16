@@ -23,6 +23,16 @@ export class CountersService {
     if (!office) {
       throw new BadRequestException()
     }
+    const counterFound = await this.countersRepository
+      .createQueryBuilder('counter')
+      .leftJoinAndSelect('counter.office', 'office')
+      .where('office.id=:officeId', { officeId: office.id })
+      .andWhere('counter.name=:counterName', { counterName: counter.name })
+      .getOne()
+    if (counterFound) {
+      console.log('counter found', counterFound)
+      return counterFound
+    }
     const newCounter = this.countersRepository.create({
       name: counter.name,
       office
