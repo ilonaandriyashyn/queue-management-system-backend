@@ -17,8 +17,15 @@ export class OrganizationsService {
     return this.organizationsRepository.save(newOrganization)
   }
 
-  // TODO needs to be async?
   async findOrganizationById(id: string) {
     return this.organizationsRepository.findOneBy({ id })
+  }
+
+  async findOrganizationOffices(id: string) {
+    const organization = await this.organizationsRepository.findOne({ relations: ['offices'], where: { id } })
+    if (!organization) {
+      return []
+    }
+    return organization.offices
   }
 }

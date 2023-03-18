@@ -16,6 +16,11 @@ export class OrganizationsController {
     return this.organizationsService.findOrganizationById(id)
   }
 
+  @Get(':id/offices')
+  getOrganizationsOffices(@Param('id') id: string) {
+    return this.organizationsService.findOrganizationOffices(id)
+  }
+
   @Post('create')
   @UsePipes(ValidationPipe)
   createOrganization(@Body() organization: CreateOrganizationDto) {
