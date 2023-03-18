@@ -27,8 +27,8 @@ export class TicketsService {
       service
     })
     await this.ticketsRepository.save(newTicket)
-    const ticketsCount = this.countTicketsByService(service.id)
-    this.gateway.server.emit(MESSAGES.ON_UPDATE_QUEUE, ticketsCount)
+    const ticketsCount = await this.countTicketsByService(service.id)
+    this.gateway.server.emit(`${MESSAGES.ON_UPDATE_QUEUE}/${service.id}`, ticketsCount)
   }
 
   findTicketById(id: string) {
