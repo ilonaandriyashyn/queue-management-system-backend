@@ -11,6 +11,11 @@ export class TicketsController {
     return this.ticketsService.findTicketById(id)
   }
 
+  @Get('service/:id')
+  getTicketsByService(@Param('id') id: string) {
+    return this.ticketsService.countTicketsByService(id)
+  }
+
   @Post('create')
   @UsePipes(ValidationPipe)
   createTicket(@Body() ticket: CreateTicketDto) {

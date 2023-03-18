@@ -5,13 +5,16 @@ import { Repository } from 'typeorm'
 import { CreateTicketDto } from './tickets.dto'
 import { ServicesService } from '../services/services.service'
 import { Service } from '../services/service.entity'
+import { SocketGateway } from '../gateway/gateway'
+import { MESSAGES } from '../helpers/messages'
 
 @Injectable()
 export class TicketsService {
   constructor(
     @InjectRepository(Ticket)
     private readonly ticketsRepository: Repository<Ticket>,
-    private readonly servicesService: ServicesService
+    private readonly servicesService: ServicesService,
+    private readonly gateway: SocketGateway
   ) {}
 
   async createTicket(ticket: CreateTicketDto) {
@@ -23,7 +26,9 @@ export class TicketsService {
       phoneId: ticket.phoneId,
       service
     })
-    return this.ticketsRepository.save(newTicket)
+    await this.ticketsRepository.save(newTicket)
+    const ticketsCount = this.countTicketsByService(service.id)
+    this.gateway.server.emit(MESSAGES.ON_UPDATE_QUEUE, ticketsCount)
   }
 
   findTicketById(id: string) {
@@ -47,17 +52,13 @@ export class TicketsService {
     return this.ticketsRepository.delete(id)
   }
 
-  // async findByServices(services: Service[]) {
-  //   const servicesIds = services.map((service) => service.id)
-  //   const tickets = await this.ticketsRepository.find({ relations: ['service'] })
-  //   const selectedTickets = []
-  //   for (const t of tickets) {
-  //     if (servicesIds.includes(t.service.id)) {
-  //       selectedTickets.push(t)
-  //     }
-  //   }
-  //   return tickets
-  // }
+  async countTicketsByService(serviceId: string) {
+    return this.ticketsRepository
+      .createQueryBuilder('tickets')
+      .leftJoinAndSelect('tickets.service', 'service')
+      .where('service.id=:serviceId', { serviceId })
+      .getCount()
+  }
 
   async findNextByServices(services: Service[]) {
     const servicesIds = services.map((service) => service.id)
