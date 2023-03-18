@@ -7,6 +7,7 @@ import { OfficesModule } from './offices/offices.module'
 import { ServicesModule } from './services/services.module'
 import { TicketsModule } from './tickets/tickets.module'
 import { CountersModule } from './counters/counters.module'
+import { GatewayModule } from './gateway/gateway.module'
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CountersModule } from './counters/counters.module'
     ServicesModule,
     CountersModule,
     TicketsModule,
+    GatewayModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

@@ -1,0 +1,3 @@
+export const MESSAGES = {
+  ON_UPDATE_QUEUE: 'ON_UPDATE_QUEUE'
+}
