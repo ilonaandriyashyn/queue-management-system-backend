@@ -11,6 +11,11 @@ export class TicketsController {
     return this.ticketsService.findTicketById(id)
   }
 
+  @Get('created/service/:id')
+  getCreatedTicketsByService(@Param('id') id: string) {
+    return this.ticketsService.findCreatedTicketsByService(id)
+  }
+
   @Get('service/:id')
   getTicketsByService(@Param('id') id: string) {
     return this.ticketsService.findAllTicketsByService(id)
