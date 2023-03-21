@@ -29,7 +29,10 @@ export class TicketsService {
     await this.ticketsRepository.save(newTicket)
     // const tickets = await this.findCreatedTicketsByService(service.id)
     // console.log('emitting to', `${MESSAGES.ON_UPDATE_QUEUE}/${service.office.id}/${service.id}`)
-    this.gateway.server.emit(`${MESSAGES.ON_UPDATE_QUEUE}/${service.office.id}/${service.id}`, ticket)
+    this.gateway.server.emit(`${MESSAGES.ON_UPDATE_QUEUE}/${service.office.id}/${service.id}`, {
+      ...newTicket,
+      counter: null
+    })
   }
 
   findTicketById(id: string) {
@@ -93,7 +96,10 @@ export class TicketsService {
 
   async findNextByServices(services: Service[]) {
     const servicesIds = services.map((service) => service.id)
-    const tickets = await this.ticketsRepository.find({ relations: ['service'], order: { dateCreated: 'ASC' } })
+    const tickets = await this.ticketsRepository.find({
+      relations: ['service', 'counter'],
+      order: { dateCreated: 'ASC' }
+    })
     for (const t of tickets) {
       if (servicesIds.includes(t.service.id)) {
         t.state = TicketState.PROCESSING
