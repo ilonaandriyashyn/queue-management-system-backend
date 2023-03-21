@@ -7,6 +7,8 @@ import { OfficesService } from '../offices/offices.service'
 import { Service } from '../services/service.entity'
 import { ServicesService } from '../services/services.service'
 import { TicketsService } from '../tickets/tickets.service'
+import { SocketGateway } from '../gateway/gateway'
+import { MESSAGES } from '../helpers/messages'
 
 @Injectable()
 export class CountersService {
@@ -15,7 +17,8 @@ export class CountersService {
     private readonly countersRepository: Repository<Counter>,
     private readonly officesService: OfficesService,
     private readonly servicesService: ServicesService,
-    private readonly ticketsService: TicketsService
+    private readonly ticketsService: TicketsService,
+    private readonly gateway: SocketGateway
   ) {}
 
   async createCounter(counter: CreateCounterDto) {
@@ -30,7 +33,6 @@ export class CountersService {
       .andWhere('counter.name=:counterName', { counterName: counter.name })
       .getOne()
     if (counterFound) {
-      console.log('counter found', counterFound)
       return counterFound
     }
     const newCounter = this.countersRepository.create({
@@ -77,7 +79,7 @@ export class CountersService {
   // so it's ok to just look for tickets based on these services
   async nextTicket(id: string) {
     const counter = await this.countersRepository.findOne({
-      relations: ['ticket', 'ticket.service', 'services'],
+      relations: ['ticket', 'ticket.service', 'services', 'office'],
       where: { id }
     })
     if (!counter || counter.ticket !== null) {
@@ -85,12 +87,17 @@ export class CountersService {
     }
     counter.ticket = await this.ticketsService.findNextByServices(counter.services)
     await this.countersRepository.save(counter)
+    if (counter.ticket !== null) {
+      this.gateway.server.emit(
+        `${MESSAGES.ON_UPDATE_QUEUE}/${counter.office.id}/${counter.ticket.service.id}`,
+        counter.ticket
+      )
+    }
     return counter.ticket
   }
 
   // TODO ticket number
   async getCurrentTicket(id: string) {
-    console.log(id)
     const counter = await this.countersRepository.findOne({
       relations: ['ticket', 'ticket.service'],
       where: { id }
