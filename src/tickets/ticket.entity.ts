@@ -1,13 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-  PrimaryGeneratedColumn
-} from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { LENGTHS } from '../helpers/validations'
 import { Service } from '../services/service.entity'
 import { Counter } from '../counters/counter.entity'
@@ -41,6 +32,5 @@ export class Ticket {
   service: Service
 
   @OneToOne(() => Counter, (counter) => counter.ticket, { nullable: true })
-  @JoinColumn()
   counter: Counter
 }

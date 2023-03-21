@@ -85,6 +85,7 @@ export class TicketsService {
     return this.ticketsRepository
       .createQueryBuilder('tickets')
       .leftJoinAndSelect('tickets.service', 'service')
+      .leftJoinAndSelect('tickets.counter', 'counter')
       .where('service.id=:serviceId', { serviceId })
       .orderBy('tickets.dateCreated', 'ASC')
       .getMany()
