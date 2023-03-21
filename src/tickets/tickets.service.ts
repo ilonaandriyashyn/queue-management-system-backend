@@ -27,8 +27,9 @@ export class TicketsService {
       service
     })
     await this.ticketsRepository.save(newTicket)
-    const ticketsCount = await this.countTicketsByService(service.id)
-    this.gateway.server.emit(`${MESSAGES.ON_UPDATE_QUEUE}/${service.id}`, ticketsCount)
+    // const tickets = await this.findCreatedTicketsByService(service.id)
+    // console.log('emitting to', `${MESSAGES.ON_UPDATE_QUEUE}/${service.office.id}/${service.id}`)
+    this.gateway.server.emit(`${MESSAGES.ON_UPDATE_QUEUE}/${service.office.id}/${service.id}`, ticket)
   }
 
   findTicketById(id: string) {
@@ -52,12 +53,41 @@ export class TicketsService {
     return this.ticketsRepository.delete(id)
   }
 
-  async countTicketsByService(serviceId: string) {
+  // async countTicketsByService(serviceId: string) {
+  //   return this.ticketsRepository
+  //     .createQueryBuilder('tickets')
+  //     .leftJoinAndSelect('tickets.service', 'service')
+  //     .where('service.id=:serviceId', { serviceId })
+  //     .getCount()
+  // }
+
+  async findCreatedTicketsByService(serviceId: string) {
     return this.ticketsRepository
       .createQueryBuilder('tickets')
       .leftJoinAndSelect('tickets.service', 'service')
       .where('service.id=:serviceId', { serviceId })
-      .getCount()
+      .andWhere('tickets.state=:ticketState', { ticketState: TicketState.CREATED })
+      .orderBy('tickets.dateCreated', 'ASC')
+      .getMany()
+  }
+
+  async findCreatedTicketsByServices(serviceIds: string[]) {
+    return this.ticketsRepository
+      .createQueryBuilder('tickets')
+      .leftJoinAndSelect('tickets.service', 'service')
+      .where('service.id IN (:...serviceIds)', { serviceIds })
+      .andWhere('tickets.state=:ticketState', { ticketState: TicketState.CREATED })
+      .orderBy('tickets.dateCreated', 'ASC')
+      .getMany()
+  }
+
+  async findAllTicketsByService(serviceId: string) {
+    return this.ticketsRepository
+      .createQueryBuilder('tickets')
+      .leftJoinAndSelect('tickets.service', 'service')
+      .where('service.id=:serviceId', { serviceId })
+      .orderBy('tickets.dateCreated', 'ASC')
+      .getMany()
   }
 
   async findNextByServices(services: Service[]) {

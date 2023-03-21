@@ -2,10 +2,13 @@ import { Body, Controller, Get, Param, Post, Put, UsePipes, ValidationPipe } fro
 import { CreateCounterDto, UpdateCounterServicesDto } from './counters.dto'
 import { CountersService } from './counters.service'
 
+// TODO rename endpoints here to get, create etc, and in service to find
+
 @Controller('counters')
 export class CountersController {
   constructor(private readonly countersService: CountersService) {}
 
+  // TODO do not create if name already exists for this particular office
   @Post('create')
   @UsePipes(ValidationPipe)
   createCounter(@Body() counter: CreateCounterDto) {
@@ -35,5 +38,11 @@ export class CountersController {
   @UsePipes(ValidationPipe)
   async getCurrentTicket(@Param('id') id: string) {
     return await this.countersService.getCurrentTicket(id)
+  }
+
+  @Get(':id/tickets/created')
+  @UsePipes(ValidationPipe)
+  async getCreatedTickets(@Param('id') id: string) {
+    return await this.countersService.findCreatedTickets(id)
   }
 }

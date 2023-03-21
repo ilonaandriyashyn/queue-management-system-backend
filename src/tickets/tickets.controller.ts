@@ -13,7 +13,7 @@ export class TicketsController {
 
   @Get('service/:id')
   getTicketsByService(@Param('id') id: string) {
-    return this.ticketsService.countTicketsByService(id)
+    return this.ticketsService.findAllTicketsByService(id)
   }
 
   @Post('create')

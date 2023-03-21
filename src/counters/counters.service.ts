@@ -100,4 +100,16 @@ export class CountersService {
     }
     return counter.ticket
   }
+
+  async findCreatedTickets(id: string) {
+    const counter = await this.countersRepository.findOne({
+      relations: ['services'],
+      where: { id }
+    })
+    if (!counter) {
+      throw new BadRequestException()
+    }
+    const serviceIds = counter.services.map((service) => service.id)
+    return await this.ticketsService.findCreatedTicketsByServices(serviceIds)
+  }
 }
