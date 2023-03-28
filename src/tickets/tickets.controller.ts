@@ -21,6 +21,11 @@ export class TicketsController {
     return this.ticketsService.findAllTicketsByService(id)
   }
 
+  @Get('service/:serviceId/device/:phoneId')
+  getTicketByServiceAndDevice(@Param('serviceId') serviceId: string, @Param('phoneId') phoneId: string) {
+    return this.ticketsService.findTicketByServiceAndDevice(serviceId, phoneId)
+  }
+
   @Post('create')
   @UsePipes(ValidationPipe)
   createTicket(@Body() ticket: CreateTicketDto) {

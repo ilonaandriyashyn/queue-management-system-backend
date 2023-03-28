@@ -94,6 +94,16 @@ export class TicketsService {
       .getMany()
   }
 
+  async findTicketByServiceAndDevice(serviceId: string, phoneId: string) {
+    return this.ticketsRepository
+      .createQueryBuilder('tickets')
+      .leftJoinAndSelect('tickets.service', 'service')
+      .leftJoinAndSelect('tickets.counter', 'counter')
+      .where('service.id=:serviceId', { serviceId })
+      .andWhere('tickets.phoneId=:phoneId', { phoneId })
+      .getOne()
+  }
+
   async findNextByServices(services: Service[]) {
     const servicesIds = services.map((service) => service.id)
     const tickets = await this.ticketsRepository.find({
