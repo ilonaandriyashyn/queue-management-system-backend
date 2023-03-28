@@ -104,6 +104,13 @@ export class TicketsService {
       .getOne()
   }
 
+  async findTicketsForDevice(phoneId: string) {
+    return this.ticketsRepository
+      .createQueryBuilder('tickets')
+      .where('tickets.phoneId=:phoneId', { phoneId })
+      .getCount()
+  }
+
   async findNextByServices(services: Service[]) {
     const servicesIds = services.map((service) => service.id)
     const tickets = await this.ticketsRepository.find({
