@@ -22,6 +22,10 @@ export class TicketsService {
     if (!service || !service.office || !service.office.organization) {
       throw new BadRequestException()
     }
+    const ticketsForDevice = await this.findTicketsForDevice(ticket.phoneId)
+    if (ticketsForDevice === 5) {
+      throw new BadRequestException()
+    }
     const newTicket = this.ticketsRepository.create({
       phoneId: ticket.phoneId,
       service
