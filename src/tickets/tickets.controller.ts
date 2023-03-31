@@ -27,7 +27,7 @@ export class TicketsController {
   }
 
   @Get('device/:phoneId')
-  getTicketsForDevice(@Param('phoneId') phoneId: string) {
+  getTicketsCountForDevice(@Param('phoneId') phoneId: string) {
     return this.ticketsService.findTicketsForDevice(phoneId)
   }
 
