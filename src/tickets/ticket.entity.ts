@@ -13,11 +13,13 @@ export class Ticket {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
+  @Column()
+  ticketNumber: number
+
   @Index()
   @CreateDateColumn()
   dateCreated: Date
 
-  // TODO maybe it will be a number IMEI
   @Column({ length: LENGTHS.MEDIUM })
   phoneId: string
 

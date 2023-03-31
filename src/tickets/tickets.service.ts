@@ -26,13 +26,15 @@ export class TicketsService {
     if (ticketsForDevice === 5) {
       throw new BadRequestException()
     }
+    const serviceIds = service.office.services.map((service) => service.id)
+    const ticketWithHighestNumber = await this.findTicketWithHighestNumberByServices(serviceIds)
+    const newTicketNumber = ticketWithHighestNumber === null ? 1 : ticketWithHighestNumber.ticketNumber + 1
     const newTicket = this.ticketsRepository.create({
       phoneId: ticket.phoneId,
+      ticketNumber: newTicketNumber,
       service
     })
     await this.ticketsRepository.save(newTicket)
-    // const tickets = await this.findCreatedTicketsByService(service.id)
-    // console.log('emitting to', `${MESSAGES.ON_UPDATE_QUEUE}/${service.office.id}/${service.id}`)
     this.gateway.server.emit(`${MESSAGES.ON_UPDATE_QUEUE}/${service.office.id}/${service.id}`, {
       ...newTicket,
       counter: null
@@ -96,6 +98,15 @@ export class TicketsService {
       .where('service.id=:serviceId', { serviceId })
       .orderBy('tickets.dateCreated', 'ASC')
       .getMany()
+  }
+
+  async findTicketWithHighestNumberByServices(serviceIds: string[]) {
+    return this.ticketsRepository
+      .createQueryBuilder('tickets')
+      .leftJoinAndSelect('tickets.service', 'service')
+      .where('service.id IN (:...serviceIds)', { serviceIds })
+      .orderBy('tickets.ticketNumber', 'DESC')
+      .getOne()
   }
 
   async findTicketByServiceAndDevice(serviceId: string, phoneId: string) {

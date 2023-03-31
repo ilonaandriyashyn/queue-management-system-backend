@@ -17,7 +17,10 @@ export class ServicesService {
   }
 
   async findServiceByIdWithOffice(id: string) {
-    return this.servicesRepository.findOne({ relations: ['office', 'office.organization'], where: { id } })
+    return this.servicesRepository.findOne({
+      relations: ['office', 'office.organization', 'office.services'],
+      where: { id }
+    })
   }
 
   // TODO maybe it is enough to just get it by office id
