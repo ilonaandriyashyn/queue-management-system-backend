@@ -96,7 +96,6 @@ export class CountersService {
     return counter.ticket
   }
 
-  // TODO ticket number
   async getCurrentTicket(id: string) {
     const counter = await this.countersRepository.findOne({
       relations: ['ticket', 'ticket.service'],

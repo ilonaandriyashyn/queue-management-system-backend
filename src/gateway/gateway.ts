@@ -18,6 +18,7 @@ export class SocketGateway implements OnModuleInit {
     })
   }
 
+  // TODO I probably do not need this
   @SubscribeMessage('newTicket')
   // TODO change unknown
   onNewTicket(@MessageBody() body: unknown) {

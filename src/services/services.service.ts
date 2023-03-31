@@ -23,17 +23,6 @@ export class ServicesService {
     })
   }
 
-  // TODO maybe it is enough to just get it by office id
-  async findServices(organizationId: string, officeId: string) {
-    return this.servicesRepository
-      .createQueryBuilder('service')
-      .leftJoinAndSelect('service.office', 'office')
-      .leftJoinAndSelect('office.organization', 'organization')
-      .where('office.id=:officeId', { officeId })
-      .andWhere('organization.id=:organizationId', { organizationId })
-      .getMany()
-  }
-
   async createService(office: Office, service: CreateServiceDto) {
     const newService = this.servicesRepository.create({
       name: service.name,

@@ -12,7 +12,7 @@ export class OrganizationsController {
   }
 
   @Get(':id')
-  findOrganizationById(@Param('id') id: string) {
+  getOrganizationById(@Param('id') id: string) {
     return this.organizationsService.findOrganizationById(id)
   }
 

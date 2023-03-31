@@ -45,15 +45,6 @@ export class TicketsService {
     return this.ticketsRepository.findOneBy({ id })
   }
 
-  // async updateTicketStateToProcessing(id: string) {
-  //   const ticket = await this.findTicketById(id)
-  //   if (!ticket) {
-  //     throw new BadRequestException()
-  //   }
-  //   ticket.state = TicketState.PROCESSING
-  //   return this.ticketsRepository.save(ticket)
-  // }
-
   async removeTicket(id: string) {
     const ticket = await this.findTicketById(id)
     if (!ticket || ticket.state !== TicketState.PROCESSING) {
@@ -61,14 +52,6 @@ export class TicketsService {
     }
     return this.ticketsRepository.delete(id)
   }
-
-  // async countTicketsByService(serviceId: string) {
-  //   return this.ticketsRepository
-  //     .createQueryBuilder('tickets')
-  //     .leftJoinAndSelect('tickets.service', 'service')
-  //     .where('service.id=:serviceId', { serviceId })
-  //     .getCount()
-  // }
 
   async findCreatedTicketsByService(serviceId: string) {
     return this.ticketsRepository

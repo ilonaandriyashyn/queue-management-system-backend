@@ -6,13 +6,8 @@ import { OfficesService } from './offices.service'
 export class OfficesController {
   constructor(private readonly officesService: OfficesService) {}
 
-  @Get()
-  getOffices() {
-    return this.officesService.findOffices()
-  }
-
   @Get(':id')
-  findOfficeById(@Param('id') id: string) {
+  getOfficeById(@Param('id') id: string) {
     return this.officesService.findOfficeById(id)
   }
 

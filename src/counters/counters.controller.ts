@@ -2,13 +2,10 @@ import { Body, Controller, Get, Param, Post, Put, UsePipes, ValidationPipe } fro
 import { CreateCounterDto, UpdateCounterServicesDto } from './counters.dto'
 import { CountersService } from './counters.service'
 
-// TODO rename endpoints here to get, create etc, and in service to find
-
 @Controller('counters')
 export class CountersController {
   constructor(private readonly countersService: CountersService) {}
 
-  // TODO do not create if name already exists for this particular office
   @Post('create')
   @UsePipes(ValidationPipe)
   createCounter(@Body() counter: CreateCounterDto) {
