@@ -8,7 +8,7 @@ export class OrganizationsController {
 
   @Get()
   getOrganizations() {
-    return this.organizationsService.getOrganizations()
+    return this.organizationsService.findOrganizations()
   }
 
   @Get(':id')

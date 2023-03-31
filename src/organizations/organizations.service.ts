@@ -8,7 +8,7 @@ import { CreateOrganizationDto } from './organizations.dto'
 export class OrganizationsService {
   constructor(@InjectRepository(Organization) private readonly organizationsRepository: Repository<Organization>) {}
 
-  getOrganizations() {
+  findOrganizations() {
     return this.organizationsRepository.find()
   }
 
