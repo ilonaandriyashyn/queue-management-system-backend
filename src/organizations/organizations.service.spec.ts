@@ -1,15 +1,19 @@
-import { Repository } from 'typeorm'
+import { DataSource, Repository } from 'typeorm'
 import { Organization } from './organization.entity'
 import { OrganizationsService } from './organizations.service'
 import { setupDataSource } from '../../connection'
 import { Office } from '../offices/office.entity'
 
 describe('Organizations service', () => {
+  let dataSource: DataSource
   let repo: Repository<Organization>
 
-  test('findOrganizations', async () => {
-    const dataSource = await setupDataSource()
+  beforeEach(async () => {
+    dataSource = await setupDataSource()
     repo = dataSource.getRepository(Organization)
+  })
+
+  test('findOrganizations', async () => {
     await repo.save([
       {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
@@ -34,8 +38,6 @@ describe('Organizations service', () => {
   })
 
   test('createOrganization', async () => {
-    const dataSource = await setupDataSource()
-    repo = dataSource.getRepository(Organization)
     const organizationsService = new OrganizationsService(repo)
     const newOrg = await organizationsService.createOrganization({ name: 'New Organization' })
     expect(newOrg.id).not.toBeNull()
@@ -44,8 +46,6 @@ describe('Organizations service', () => {
 
   describe('findOrganizationById', () => {
     test('does not find organization', async () => {
-      const dataSource = await setupDataSource()
-      repo = dataSource.getRepository(Organization)
       await repo.save([
         {
           id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
@@ -57,8 +57,6 @@ describe('Organizations service', () => {
     })
 
     test('finds organization', async () => {
-      const dataSource = await setupDataSource()
-      repo = dataSource.getRepository(Organization)
       await repo.save([
         {
           id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
@@ -75,8 +73,6 @@ describe('Organizations service', () => {
 
   describe('findOrganizationOffices', () => {
     test('does not find organization', async () => {
-      const dataSource = await setupDataSource()
-      repo = dataSource.getRepository(Organization)
       const officeRepo = dataSource.getRepository(Office)
       const org = await repo.create({
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
@@ -98,8 +94,6 @@ describe('Organizations service', () => {
     })
 
     test('finds organization', async () => {
-      const dataSource = await setupDataSource()
-      repo = dataSource.getRepository(Organization)
       const officeRepo = dataSource.getRepository(Office)
       const org = await repo.create({
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
