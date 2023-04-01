@@ -312,7 +312,7 @@ describe('Offices service', () => {
           '3f561b51-9520-43d8-b3dc-ff21a7990111',
           '3f561b51-9520-43d8-b3dc-ff21a7990222'
         ])
-      ).toEqual({ ...office, services: [serv2] })
+      ).toEqual({ ...office, services: [{ ...serv2, office }] })
     })
   })
 })

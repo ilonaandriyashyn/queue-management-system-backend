@@ -21,6 +21,7 @@ export class CountersService {
     private readonly gateway: SocketGateway
   ) {}
 
+  // TODO think about moving it to offices controller
   async createCounter(counter: CreateCounterDto) {
     const office = await this.officesService.findOfficeById(counter.officeId)
     if (!office) {
@@ -51,11 +52,10 @@ export class CountersService {
     for (const serviceId of servicesIds) {
       try {
         const service = await this.servicesService.findServiceById(serviceId)
-        if (service) {
+        if (service && service.office.id === counter.office.id) {
           services.push(service)
         }
       } catch (e) {
-        // TODO modify, check for different errors. This error happens when serviceId is not uuid
         throw new BadRequestException()
       }
     }
@@ -64,7 +64,7 @@ export class CountersService {
   }
 
   findCounterById(id: string) {
-    return this.countersRepository.findOneBy({ id })
+    return this.countersRepository.findOne({ relations: ['office'], where: { id } })
   }
 
   async doneTicket(id: string) {

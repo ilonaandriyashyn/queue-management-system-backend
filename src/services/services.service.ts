@@ -13,7 +13,7 @@ export class ServicesService {
   ) {}
 
   async findServiceById(id: string) {
-    return this.servicesRepository.findOneBy({ id })
+    return this.servicesRepository.findOne({ relations: ['office'], where: { id } })
   }
 
   async findServiceByIdWithOffice(id: string) {
