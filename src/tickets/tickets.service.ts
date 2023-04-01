@@ -116,7 +116,7 @@ export class TicketsService {
       order: { dateCreated: 'ASC' }
     })
     for (const t of tickets) {
-      if (servicesIds.includes(t.service.id)) {
+      if (servicesIds.includes(t.service.id) && t.state === TicketState.CREATED) {
         t.state = TicketState.PROCESSING
         await this.ticketsRepository.save(t)
         return t
