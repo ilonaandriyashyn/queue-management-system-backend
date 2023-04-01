@@ -16,10 +16,6 @@ export class OfficesService {
     private readonly servicesService: ServicesService
   ) {}
 
-  findOffices() {
-    return this.officesRepository.find({ relations: ['counters', 'counters.services', 'services'] })
-  }
-
   async createOffice(office: CreateOfficeDto) {
     const organization = await this.organizationsService.findOrganizationById(office.organizationId)
     if (!organization) {
@@ -70,7 +66,6 @@ export class OfficesService {
           services.push(service)
         }
       } catch (e) {
-        // TODO modify, check for different errors. This error happens when serviceId is not uuid
         throw new BadRequestException()
       }
     }
