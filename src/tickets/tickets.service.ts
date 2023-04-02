@@ -53,16 +53,6 @@ export class TicketsService {
     return this.ticketsRepository.delete(id)
   }
 
-  async findCreatedTicketsByService(serviceId: string) {
-    return this.ticketsRepository
-      .createQueryBuilder('tickets')
-      .leftJoinAndSelect('tickets.service', 'service')
-      .where('service.id=:serviceId', { serviceId })
-      .andWhere('tickets.state=:ticketState', { ticketState: TicketState.CREATED })
-      .orderBy('tickets.dateCreated', 'ASC')
-      .getMany()
-  }
-
   async findCreatedTicketsByServices(serviceIds: string[]) {
     return this.ticketsRepository
       .createQueryBuilder('tickets')

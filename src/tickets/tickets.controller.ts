@@ -13,7 +13,7 @@ export class TicketsController {
 
   @Get('created/service/:id')
   getCreatedTicketsByService(@Param('id') id: string) {
-    return this.ticketsService.findCreatedTicketsByService(id)
+    return this.ticketsService.findCreatedTicketsByServices([id])
   }
 
   @Get('service/:id')
