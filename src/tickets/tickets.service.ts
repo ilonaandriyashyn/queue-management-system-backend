@@ -23,7 +23,7 @@ export class TicketsService {
       throw new BadRequestException()
     }
     const ticketsForDevice = await this.findTicketsForDevice(ticket.phoneId)
-    if (ticketsForDevice === 5) {
+    if (ticketsForDevice >= 5) {
       throw new BadRequestException()
     }
     const serviceIds = service.office.services.map((service) => service.id)
