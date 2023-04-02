@@ -4,6 +4,12 @@ import { LENGTHS } from '../helpers/validations'
 import { Service } from '../services/service.entity'
 import { Counter } from '../counters/counter.entity'
 
+export enum TicketLife {
+  HOURS24 = 'HOURS24',
+  HOURS48 = 'HOURS48',
+  HOURS72 = 'HOURS72'
+}
+
 @Entity()
 export class Office {
   @PrimaryGeneratedColumn('uuid')
@@ -35,4 +41,11 @@ export class Office {
 
   @OneToMany(() => Service, (service) => service.office)
   services: Service[]
+
+  @Column({
+    type: 'enum',
+    enum: TicketLife,
+    default: TicketLife.HOURS24
+  })
+  ticketLife: TicketLife
 }

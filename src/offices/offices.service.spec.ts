@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm'
 import { setupDataSource } from '../../connection'
-import { Office } from './office.entity'
+import { Office, TicketLife } from './office.entity'
 import { OfficesService } from './offices.service'
 import { Organization } from '../organizations/organization.entity'
 import { OrganizationsService } from '../organizations/organizations.service'
@@ -98,7 +98,8 @@ describe('Offices service', () => {
         country: 'cz',
         postCode: '13400',
         building: '123',
-        block: '111'
+        block: '111',
+        ticketLife: TicketLife.HOURS24
       }
       await officesRepo.save({ ...office, organization: org })
       const service = new OfficesService(officesRepo, organizationsService, servicesService)
@@ -313,6 +314,44 @@ describe('Offices service', () => {
           '3f561b51-9520-43d8-b3dc-ff21a7990222'
         ])
       ).toEqual({ ...office, services: [{ ...serv2, office }] })
+    })
+  })
+
+  describe('updateTicketLife', () => {
+    test('office is not found', async () => {
+      const office = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
+        city: 'Prague',
+        street: 'Karlova',
+        country: 'cz',
+        postCode: '13400',
+        building: '123',
+        block: '111'
+      }
+      await officesRepo.save(office)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
+      await expect(
+        service.updateTicketLife('3f561b51-9520-43d8-b3dc-ff21a7990001', TicketLife.HOURS48)
+      ).rejects.toThrow(BadRequestException)
+    })
+
+    test('updates ticket life', async () => {
+      const office = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
+        city: 'Prague',
+        street: 'Karlova',
+        country: 'cz',
+        postCode: '13400',
+        building: '123',
+        block: '111',
+        ticketLife: TicketLife.HOURS24
+      }
+      await officesRepo.save(office)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
+      expect(await service.updateTicketLife('3f561b51-9520-43d8-b3dc-ff21a799000d', TicketLife.HOURS48)).toEqual({
+        ...office,
+        ticketLife: TicketLife.HOURS48
+      })
     })
   })
 })

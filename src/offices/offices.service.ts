@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Office } from './office.entity'
+import { Office, TicketLife } from './office.entity'
 import { Repository } from 'typeorm'
 import { CreateOfficeDto, CreateServiceDto } from './offices.dto'
 import { OrganizationsService } from '../organizations/organizations.service'
@@ -70,6 +70,15 @@ export class OfficesService {
       }
     }
     office.services = services
+    return this.officesRepository.save(office)
+  }
+
+  async updateTicketLife(id: string, ticketLife: TicketLife) {
+    const office = await this.officesRepository.findOne({ where: { id } })
+    if (!office) {
+      throw new BadRequestException()
+    }
+    office.ticketLife = ticketLife
     return this.officesRepository.save(office)
   }
 }

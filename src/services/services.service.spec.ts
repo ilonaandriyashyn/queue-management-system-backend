@@ -2,7 +2,7 @@ import { Repository } from 'typeorm'
 import { setupDataSource } from '../../connection'
 import { ServicesService } from './services.service'
 import { Service } from './service.entity'
-import { Office } from '../offices/office.entity'
+import { Office, TicketLife } from '../offices/office.entity'
 import { Organization } from '../organizations/organization.entity'
 
 describe('Services service', () => {
@@ -30,7 +30,8 @@ describe('Services service', () => {
       country: 'cz',
       postCode: '13400',
       building: '123',
-      block: '111'
+      block: '111',
+      ticketLife: TicketLife.HOURS24
     }
     await officesRepo.save({ ...office, organization: org })
     const serv = {

@@ -2,7 +2,7 @@ import { DataSource, Repository } from 'typeorm'
 import { Organization } from './organization.entity'
 import { OrganizationsService } from './organizations.service'
 import { setupDataSource } from '../../connection'
-import { Office } from '../offices/office.entity'
+import { Office, TicketLife } from '../offices/office.entity'
 
 describe('Organizations service', () => {
   let dataSource: DataSource
@@ -107,7 +107,8 @@ describe('Organizations service', () => {
         country: 'cz',
         postCode: '13400',
         building: '123',
-        block: '111'
+        block: '111',
+        ticketLife: TicketLife.HOURS24
       }
       await officeRepo.save({ ...office, organization: org })
       const organizationsService = new OrganizationsService(repo)

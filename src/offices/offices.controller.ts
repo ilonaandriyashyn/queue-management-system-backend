@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common'
 import { CreateOfficeDto, CreateServiceDto, UpdateOfficeServicesDto } from './offices.dto'
 import { OfficesService } from './offices.service'
+import { TicketLife } from './office.entity'
 
 @Controller('offices')
 export class OfficesController {
@@ -32,5 +33,11 @@ export class OfficesController {
   @UsePipes(ValidationPipe)
   createService(@Param('id') id: string, @Body() service: CreateServiceDto) {
     return this.officesService.createService(id, service)
+  }
+
+  @Put(':id/ticket-life')
+  @UsePipes(ValidationPipe)
+  updateTicketLife(@Param('id') id: string, @Body() body: { ticketLife: TicketLife }) {
+    return this.officesService.updateTicketLife(id, body.ticketLife)
   }
 }
