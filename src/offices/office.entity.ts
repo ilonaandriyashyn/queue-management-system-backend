@@ -5,9 +5,9 @@ import { Service } from '../services/service.entity'
 import { Counter } from '../counters/counter.entity'
 
 export enum TicketLife {
-  HOURS24 = 'HOURS24',
-  HOURS48 = 'HOURS48',
-  HOURS72 = 'HOURS72'
+  HOURS24 = 24,
+  HOURS48 = 48,
+  HOURS72 = 72
 }
 
 @Entity()

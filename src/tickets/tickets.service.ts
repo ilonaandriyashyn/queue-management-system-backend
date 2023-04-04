@@ -7,6 +7,7 @@ import { ServicesService } from '../services/services.service'
 import { Service } from '../services/service.entity'
 import { SocketGateway } from '../gateway/gateway'
 import { MESSAGES } from '../helpers/messages'
+import { TicketLife } from '../offices/office.entity'
 
 @Injectable()
 export class TicketsService {
@@ -45,6 +46,10 @@ export class TicketsService {
     return this.ticketsRepository.findOneBy({ id })
   }
 
+  removeTicketWithoutCheck(id: string) {
+    return this.ticketsRepository.delete(id)
+  }
+
   async removeTicket(id: string) {
     const ticket = await this.findTicketById(id)
     if (!ticket || ticket.state !== TicketState.PROCESSING) {
@@ -59,6 +64,17 @@ export class TicketsService {
       .leftJoinAndSelect('tickets.service', 'service')
       .where('service.id IN (:...serviceIds)', { serviceIds })
       .andWhere('tickets.state=:ticketState', { ticketState: TicketState.CREATED })
+      .orderBy('tickets.dateCreated', 'ASC')
+      .getMany()
+  }
+
+  async findCreatedTicketsByServicesAndDate(serviceIds: string[], ticketLife: TicketLife) {
+    return this.ticketsRepository
+      .createQueryBuilder('tickets')
+      .leftJoinAndSelect('tickets.service', 'service')
+      .where('service.id IN (:...serviceIds)', { serviceIds })
+      .andWhere('tickets.state=:ticketState', { ticketState: TicketState.CREATED })
+      .andWhere("(tickets.dateCreated + INTERVAL '1 hour' * :ticketLife)<=NOW()", { ticketLife })
       .orderBy('tickets.dateCreated', 'ASC')
       .getMany()
   }

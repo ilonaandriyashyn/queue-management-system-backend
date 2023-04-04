@@ -8,6 +8,8 @@ import { ServicesModule } from './services/services.module'
 import { TicketsModule } from './tickets/tickets.module'
 import { CountersModule } from './counters/counters.module'
 import { GatewayModule } from './gateway/gateway.module'
+import { ScheduleModule } from '@nestjs/schedule'
+import { DevtoolsModule } from '@nestjs/devtools-integration'
 
 @Module({
   imports: [
@@ -26,6 +28,10 @@ import { GatewayModule } from './gateway/gateway.module'
       database: 'queue',
       synchronize: true, // Turn this off in production
       autoLoadEntities: true
+    }),
+    ScheduleModule.forRoot(),
+    DevtoolsModule.register({
+      http: process.env.NODE_ENV !== 'production'
     })
   ],
   controllers: [AppController],
