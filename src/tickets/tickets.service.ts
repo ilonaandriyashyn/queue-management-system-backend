@@ -68,6 +68,7 @@ export class TicketsService {
       .getMany()
   }
 
+  // TODO do we need order by here? If not fix in text as well.
   async findCreatedTicketsByServicesAndDate(serviceIds: string[], ticketLife: TicketLife) {
     return this.ticketsRepository
       .createQueryBuilder('tickets')
@@ -89,6 +90,7 @@ export class TicketsService {
       .getMany()
   }
 
+  // TODO maybe get the highest number based on office, not on services.
   async findTicketWithHighestNumberByServices(serviceIds: string[]) {
     return this.ticketsRepository
       .createQueryBuilder('tickets')
