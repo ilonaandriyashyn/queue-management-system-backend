@@ -88,6 +88,7 @@ export class CountersService {
     counter.ticket = await this.ticketsService.findNextByServices(counter.services)
     await this.countersRepository.save(counter)
     if (counter.ticket !== null) {
+      // TODO maybe rename topic to ADD_TICKET
       this.gateway.server.emit(
         `${MESSAGES.ON_UPDATE_QUEUE}/${counter.office.id}/${counter.ticket.service.id}`,
         counter.ticket

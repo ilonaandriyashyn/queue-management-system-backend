@@ -6,9 +6,16 @@ import { Office } from './office.entity'
 import { OrganizationsModule } from '../organizations/organizations.module'
 import { ServicesModule } from '../services/services.module'
 import { TicketsModule } from '../tickets/tickets.module'
+import { GatewayModule } from '../gateway/gateway.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Office]), OrganizationsModule, forwardRef(() => ServicesModule), TicketsModule],
+  imports: [
+    TypeOrmModule.forFeature([Office]),
+    OrganizationsModule,
+    forwardRef(() => ServicesModule),
+    TicketsModule,
+    GatewayModule
+  ],
   controllers: [OfficesController],
   providers: [OfficesService],
   exports: [OfficesService]
