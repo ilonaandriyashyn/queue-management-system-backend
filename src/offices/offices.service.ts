@@ -112,7 +112,7 @@ export class OfficesService {
       for (const ticket of ticketsToRemove[officeID]) {
         await this.ticketsService.removeTicketWithoutCheck(ticket.id)
       }
-      this.gateway.server.emit(`${MESSAGES.ON_DELETE_TICKETS}/${officeID}/`, ticketsToRemove[officeID])
+      this.gateway.server.emit(`${MESSAGES.ON_DELETE_TICKETS}/${officeID}`, ticketsToRemove[officeID])
     }
   }
 }
