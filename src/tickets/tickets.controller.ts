@@ -1,38 +1,38 @@
-import { Body, Controller, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common'
-import { CreateTicketDto } from './tickets.dto'
+import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import { CreateTicketDto, PhoneIdParam, ServiceAndDeviceParams } from './tickets.dto'
 import { TicketsService } from './tickets.service'
+import { IdParam } from '../helpers/dto'
 
 @Controller('tickets')
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
   @Get(':id')
-  findTicketById(@Param('id') id: string) {
-    return this.ticketsService.findTicketById(id)
+  findTicketById(@Param() params: IdParam) {
+    return this.ticketsService.findTicketById(params.id)
   }
 
   @Get('created/service/:id')
-  getCreatedTicketsByService(@Param('id') id: string) {
-    return this.ticketsService.findCreatedTicketsByServices([id])
+  getCreatedTicketsByService(@Param() params: IdParam) {
+    return this.ticketsService.findCreatedTicketsByServices([params.id])
   }
 
   @Get('service/:id')
-  getTicketsByService(@Param('id') id: string) {
-    return this.ticketsService.findAllTicketsByService(id)
+  getTicketsByService(@Param() params: IdParam) {
+    return this.ticketsService.findAllTicketsByService(params.id)
   }
 
   @Get('service/:serviceId/device/:phoneId')
-  getTicketByServiceAndDevice(@Param('serviceId') serviceId: string, @Param('phoneId') phoneId: string) {
-    return this.ticketsService.findTicketByServiceAndDevice(serviceId, phoneId)
+  getTicketByServiceAndDevice(@Param() params: ServiceAndDeviceParams) {
+    return this.ticketsService.findTicketByServiceAndDevice(params.serviceId, params.phoneId)
   }
 
   @Get('device/:phoneId')
-  getTicketsCountForDevice(@Param('phoneId') phoneId: string) {
-    return this.ticketsService.findTicketsForDevice(phoneId)
+  getTicketsCountForDevice(@Param() params: PhoneIdParam) {
+    return this.ticketsService.findTicketsForDevice(params.phoneId)
   }
 
   @Post('create')
-  @UsePipes(ValidationPipe)
   createTicket(@Body() ticket: CreateTicketDto) {
     return this.ticketsService.createTicket(ticket)
   }

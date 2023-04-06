@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post } from '@nestjs/common'
 import { OrganizationsService } from './organizations.service'
 import { CreateOrganizationDto } from './organizations.dto'
+import { IdParam } from '../helpers/dto'
 
 @Controller('organizations')
 export class OrganizationsController {
@@ -12,17 +13,16 @@ export class OrganizationsController {
   }
 
   @Get(':id')
-  getOrganizationById(@Param('id') id: string) {
-    return this.organizationsService.findOrganizationById(id)
+  getOrganizationById(@Param() params: IdParam) {
+    return this.organizationsService.findOrganizationById(params.id)
   }
 
   @Get(':id/offices')
-  getOrganizationsOffices(@Param('id') id: string) {
-    return this.organizationsService.findOrganizationOffices(id)
+  getOrganizationsOffices(@Param() params: IdParam) {
+    return this.organizationsService.findOrganizationOffices(params.id)
   }
 
   @Post('create')
-  @UsePipes(ValidationPipe)
   createOrganization(@Body() organization: CreateOrganizationDto) {
     return this.organizationsService.createOrganization(organization)
   }

@@ -11,3 +11,16 @@ export class CreateTicketDto {
   @IsUUID()
   serviceId: string
 }
+
+export class ServiceAndDeviceParams {
+  @IsUUID()
+  serviceId: string
+
+  @IsUUID()
+  phoneId: string
+}
+
+export class PhoneIdParam {
+  @IsUUID()
+  phoneId: string
+}
