@@ -117,6 +117,7 @@ export class TicketsService {
       .getCount()
   }
 
+  // TODO maybe refactor to query builder
   async findNextByServices(services: Service[]) {
     const servicesIds = services.map((service) => service.id)
     const tickets = await this.ticketsRepository.find({
