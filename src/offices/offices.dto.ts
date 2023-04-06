@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator'
+import { IsArray, IsISO31661Alpha2, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator'
 import { LENGTHS } from '../helpers/validations'
 
 export class CreateOfficeDto {
@@ -29,9 +29,9 @@ export class CreateOfficeDto {
   postCode: string
 
   @IsNotEmpty()
-  @IsString()
-  @MaxLength(LENGTHS.MEDIUM)
-  country: string
+  @IsISO31661Alpha2()
+  @MaxLength(2)
+  countryCode: string
 
   @IsNotEmpty()
   @IsUUID()

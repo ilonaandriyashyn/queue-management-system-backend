@@ -32,7 +32,7 @@ export class OfficesService {
       block: office.block,
       city: office.city,
       building: office.building,
-      country: office.country,
+      countryCode: office.countryCode,
       street: office.street,
       postCode: office.postCode,
       organization

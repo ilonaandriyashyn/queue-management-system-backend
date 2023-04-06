@@ -30,8 +30,8 @@ export class Office {
   @Column({ length: LENGTHS.SHORT })
   postCode: string
 
-  @Column({ length: LENGTHS.MEDIUM })
-  country: string
+  @Column({ length: 2 })
+  countryCode: string
 
   @ManyToOne(() => Organization, (organization) => organization.offices)
   organization: Organization
