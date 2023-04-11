@@ -10,6 +10,7 @@ import { CountersModule } from './counters/counters.module'
 import { GatewayModule } from './gateway/gateway.module'
 import { ScheduleModule } from '@nestjs/schedule'
 import { DevtoolsModule } from '@nestjs/devtools-integration'
+import { PrintersModule } from './printers/printers.module'
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration'
     CountersModule,
     TicketsModule,
     GatewayModule,
+    PrintersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

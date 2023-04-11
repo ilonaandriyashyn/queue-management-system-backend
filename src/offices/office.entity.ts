@@ -3,6 +3,7 @@ import { Organization } from '../organizations/organization.entity'
 import { LENGTHS } from '../helpers/validations'
 import { Service } from '../services/service.entity'
 import { Counter } from '../counters/counter.entity'
+import { Printer } from '../printers/printer.entity'
 
 export enum TicketLife {
   HOURS24 = 24,
@@ -48,4 +49,7 @@ export class Office {
     default: TicketLife.HOURS24
   })
   ticketLife: TicketLife
+
+  @OneToMany(() => Printer, (printer) => printer.office)
+  printers: Printer[]
 }
