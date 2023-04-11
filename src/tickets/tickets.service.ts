@@ -31,8 +31,7 @@ export class TicketsService {
     if (ticketExists !== null) {
       throw new BadRequestException()
     }
-    const serviceIds = service.office.services.map((service) => service.id)
-    const ticketWithHighestNumber = await this.findTicketWithHighestNumberByServices(serviceIds)
+    const ticketWithHighestNumber = await this.findTicketWithHighestNumberByOffice(service.office.id)
     const newTicketNumber = ticketWithHighestNumber === null ? 1 : ticketWithHighestNumber.ticketNumber + 1
     const newTicket = this.ticketsRepository.create({
       phoneId: ticket.phoneId,
@@ -94,12 +93,12 @@ export class TicketsService {
       .getMany()
   }
 
-  // TODO maybe get the highest number based on office, not on services.
-  async findTicketWithHighestNumberByServices(serviceIds: string[]) {
+  async findTicketWithHighestNumberByOffice(officeId: string) {
     return this.ticketsRepository
       .createQueryBuilder('tickets')
       .leftJoinAndSelect('tickets.service', 'service')
-      .where('service.id IN (:...serviceIds)', { serviceIds })
+      .leftJoinAndSelect('service.office', 'office')
+      .where('office.id=:officeId', { officeId })
       .orderBy('tickets.ticketNumber', 'DESC')
       .getOne()
   }

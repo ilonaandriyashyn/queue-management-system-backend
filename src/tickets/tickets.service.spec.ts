@@ -452,18 +452,40 @@ describe('Tickets service', () => {
     ])
   })
 
-  test('findTicketWithHighestNumberByServices', async () => {
+  test('findTicketWithHighestNumberByOffice', async () => {
+    const office1 = {
+      id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
+      city: 'Prague',
+      street: 'Karlova',
+      countryCode: 'cz',
+      postCode: '13400',
+      building: '123',
+      block: '111'
+    }
+    const office2 = {
+      id: '3f561b51-9520-43d8-b3dc-ff21a799000a',
+      city: 'Prague',
+      street: 'Karlova',
+      countryCode: 'cz',
+      postCode: '13400',
+      building: '123',
+      block: '111'
+    }
+    await officesRepo.save([office1, office2])
     const serv1 = {
       id: '3f561b51-9520-43d8-b3dc-ff21a7990111',
-      name: 'Service 1'
+      name: 'Service 1',
+      office: office1
     }
     const serv2 = {
       id: '3f561b51-9520-43d8-b3dc-ff21a7990112',
-      name: 'Service 2'
+      name: 'Service 2',
+      office: office2
     }
     const serv3 = {
       id: '3f561b51-9520-43d8-b3dc-ff21a7990113',
-      name: 'Service 3'
+      name: 'Service 3',
+      office: office1
     }
     await servicesRepo.save([serv1, serv2, serv3])
     const ticket1 = {
@@ -476,7 +498,7 @@ describe('Tickets service', () => {
     }
     const ticket2 = {
       id: '3f561b51-9520-43d8-b3dc-ff21a7990222',
-      ticketNumber: 123,
+      ticketNumber: 890,
       dateCreated: '2022-07-13T18:16:01.933Z',
       phoneId: '123456789',
       state: TicketState.CREATED,
@@ -508,12 +530,7 @@ describe('Tickets service', () => {
     }
     await ticketsRepo.save([ticket1, ticket2, ticket3, ticket4, ticket5])
     const service = new TicketsService(ticketsRepo, servicesService, gateway)
-    expect(
-      await service.findTicketWithHighestNumberByServices([
-        '3f561b51-9520-43d8-b3dc-ff21a7990111',
-        '3f561b51-9520-43d8-b3dc-ff21a7990112'
-      ])
-    ).toEqual(ticket1)
+    expect(await service.findTicketWithHighestNumberByOffice('3f561b51-9520-43d8-b3dc-ff21a799000d')).toEqual(ticket1)
   })
 
   test('findTicketByServiceAndDevice', async () => {
