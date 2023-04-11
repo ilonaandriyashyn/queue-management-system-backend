@@ -6,6 +6,7 @@ import { Organization } from './src/organizations/organization.entity'
 import { Service } from './src/services/service.entity'
 import { Ticket } from './src/tickets/ticket.entity'
 import { Counter } from './src/counters/counter.entity'
+import { Printer } from './src/printers/printer.entity'
 
 export const setupDataSource = async () => {
   const db = newDb({
@@ -34,7 +35,7 @@ export const setupDataSource = async () => {
 
   const ds: DataSource = await db.adapters.createTypeormDataSource({
     type: 'postgres',
-    entities: [Office, Organization, Service, Ticket, Counter]
+    entities: [Office, Organization, Service, Ticket, Counter, Printer]
   })
   await ds.initialize()
   await ds.synchronize()
