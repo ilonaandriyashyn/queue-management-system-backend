@@ -35,9 +35,9 @@ describe('Counters service', () => {
     ticketsRepo = dataSource.getRepository(Ticket)
     organizationsService = new OrganizationsService(orgRepo)
     servicesService = new ServicesService(servicesRepo)
-    officesService = new OfficesService(officesRepo, organizationsService, servicesService)
     gateway = new SocketGateway()
     ticketsService = new TicketsService(ticketsRepo, servicesService, gateway)
+    officesService = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
   })
 
   describe('createCounter', () => {
@@ -46,7 +46,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -63,7 +63,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -86,7 +86,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -111,7 +111,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -143,7 +143,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -171,7 +171,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -206,7 +206,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -215,7 +215,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000a',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -256,7 +256,7 @@ describe('Counters service', () => {
       id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
       city: 'Prague',
       street: 'Karlova',
-      country: 'cz',
+      countryCode: 'cz',
       postCode: '13400',
       building: '123',
       block: '111'
@@ -325,12 +325,29 @@ describe('Counters service', () => {
     })
 
     test('deletes ticket', async () => {
+      const office1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
+        city: 'Prague',
+        street: 'Karlova',
+        countryCode: 'cz',
+        postCode: '13400',
+        building: '123',
+        block: '111'
+      }
+      await officesRepo.save(office1)
+      const serv1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990111',
+        name: 'Service 1',
+        office: office1
+      }
+      await servicesRepo.save(serv1)
       const ticket = {
         id: '3f561b51-9520-43d8-b3dc-ff21a7990222',
         ticketNumber: 123,
         dateCreated: '2022-07-13T18:46:01.933Z',
         phoneId: '123456789',
-        state: TicketState.PROCESSING
+        state: TicketState.PROCESSING,
+        service: serv1
       }
       await ticketsRepo.save(ticket)
       const counter = {
@@ -339,8 +356,18 @@ describe('Counters service', () => {
         ticket
       }
       await countersRepo.save(counter)
+      gateway = new SocketGateway()
+      const emit = jest.fn()
+      // @ts-expect-error no need to mock everything
+      gateway.server = {
+        emit
+      }
       const service = new CountersService(countersRepo, officesService, servicesService, ticketsService, gateway)
       expect(await service.doneTicket('3f561b51-9520-43d8-b3dc-ff21a7990111')).toEqual({ affected: 1, raw: [] })
+      expect(emit).toHaveBeenCalledWith(
+        `${MESSAGES.ON_DONE_TICKET}/${counter.ticket.service.id}`,
+        '3f561b51-9520-43d8-b3dc-ff21a7990222'
+      )
     })
   })
 
@@ -379,7 +406,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -466,7 +493,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -548,7 +575,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -599,7 +626,7 @@ describe('Counters service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'

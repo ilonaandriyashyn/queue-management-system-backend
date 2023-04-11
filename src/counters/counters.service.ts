@@ -68,11 +68,14 @@ export class CountersService {
   }
 
   async doneTicket(id: string) {
-    const counter = await this.countersRepository.findOne({ relations: ['ticket'], where: { id } })
+    const counter = await this.countersRepository.findOne({ relations: ['ticket', 'ticket.service'], where: { id } })
     if (!counter || counter.ticket === null) {
       throw new BadRequestException()
     }
-    return this.ticketsService.removeTicket(counter.ticket.id)
+    const ticketId = counter.ticket.id
+    const response = await this.ticketsService.removeTicket(counter.ticket.id)
+    this.gateway.server.emit(`${MESSAGES.ON_DONE_TICKET}/${counter.ticket.service.id}`, ticketId)
+    return response
   }
 
   // It is generated for based on service that counter has, but the services id are different for each office,
