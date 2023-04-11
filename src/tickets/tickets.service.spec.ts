@@ -261,7 +261,7 @@ describe('Tickets service', () => {
         })
       )
       expect(emit).toHaveBeenCalledWith(
-        `${MESSAGES.ON_UPDATE_QUEUE}/${office.id}/${serv2.id}`,
+        `${MESSAGES.ON_UPDATE_QUEUE}/${serv2.id}`,
         expect.objectContaining({
           phoneId: '123456789',
           state: TicketState.CREATED,

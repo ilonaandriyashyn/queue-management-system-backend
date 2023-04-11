@@ -480,7 +480,7 @@ describe('Counters service', () => {
         })
       )
       expect(emit).toHaveBeenCalledWith(
-        `${MESSAGES.ON_UPDATE_QUEUE}/${counter.office.id}/${ticket4.service.id}`,
+        `${MESSAGES.ON_UPDATE_QUEUE}/${ticket4.service.id}`,
         expect.objectContaining({
           ...ticket4,
           state: TicketState.PROCESSING,

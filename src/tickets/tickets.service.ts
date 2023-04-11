@@ -39,7 +39,7 @@ export class TicketsService {
       service
     })
     await this.ticketsRepository.save(newTicket)
-    this.gateway.server.emit(`${MESSAGES.ON_UPDATE_QUEUE}/${service.office.id}/${service.id}`, {
+    this.gateway.server.emit(`${MESSAGES.ON_UPDATE_QUEUE}/${service.id}`, {
       ...newTicket,
       counter: null
     })
