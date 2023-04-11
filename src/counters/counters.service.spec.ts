@@ -483,7 +483,11 @@ describe('Counters service', () => {
         `${MESSAGES.ON_UPDATE_QUEUE}/${counter.office.id}/${ticket4.service.id}`,
         expect.objectContaining({
           ...ticket4,
-          state: TicketState.PROCESSING
+          state: TicketState.PROCESSING,
+          counter: {
+            id: counter.id,
+            name: counter.name
+          }
         })
       )
     })
