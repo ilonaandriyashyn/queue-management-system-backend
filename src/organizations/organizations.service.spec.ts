@@ -83,7 +83,7 @@ describe('Organizations service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a7990001',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111'
@@ -104,7 +104,7 @@ describe('Organizations service', () => {
         id: '3f561b51-9520-43d8-b3dc-ff21a7990001',
         city: 'Prague',
         street: 'Karlova',
-        country: 'cz',
+        countryCode: 'cz',
         postCode: '13400',
         building: '123',
         block: '111',
