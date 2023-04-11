@@ -27,6 +27,10 @@ export class TicketsService {
     if (ticketsForDevice >= 5) {
       throw new BadRequestException()
     }
+    const ticketExists = await this.findTicketByServiceAndDevice(service.id, ticket.phoneId)
+    if (ticketExists !== null) {
+      throw new BadRequestException()
+    }
     const serviceIds = service.office.services.map((service) => service.id)
     const ticketWithHighestNumber = await this.findTicketWithHighestNumberByServices(serviceIds)
     const newTicketNumber = ticketWithHighestNumber === null ? 1 : ticketWithHighestNumber.ticketNumber + 1

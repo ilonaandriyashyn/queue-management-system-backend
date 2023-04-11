@@ -146,7 +146,7 @@ describe('Tickets service', () => {
       ).rejects.toThrow(BadRequestException)
     })
 
-    test('creates ticket', async () => {
+    test('ticket from device for service already exists', async () => {
       const organization = {
         id: '3f561b51-9520-43d8-b3dc-ff21a799000a',
         name: 'Org 1'
@@ -169,6 +169,49 @@ describe('Tickets service', () => {
         office
       }
       await servicesRepo.save(serv1)
+      const ticket1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990222',
+        ticketNumber: 123,
+        dateCreated: '2022-07-13T18:16:01.933Z',
+        phoneId: '123456789',
+        state: TicketState.CREATED,
+        service: serv1
+      }
+      await ticketsRepo.save(ticket1)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      await expect(
+        service.createTicket({ phoneId: '123456789', serviceId: '3f561b51-9520-43d8-b3dc-ff21a7990001' })
+      ).rejects.toThrow(BadRequestException)
+    })
+
+    test('creates ticket', async () => {
+      const organization = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000a',
+        name: 'Org 1'
+      }
+      await orgRepo.save(organization)
+      const office = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
+        city: 'Prague',
+        street: 'Karlova',
+        countryCode: 'cz',
+        postCode: '13400',
+        building: '123',
+        block: '111',
+        organization
+      }
+      await officesRepo.save(office)
+      const serv1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990001',
+        name: 'Service 1',
+        office
+      }
+      const serv2 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990002',
+        name: 'Service 2',
+        office
+      }
+      await servicesRepo.save([serv1, serv2])
       const ticket1 = {
         id: '3f561b51-9520-43d8-b3dc-ff21a7990222',
         ticketNumber: 123,
@@ -209,7 +252,7 @@ describe('Tickets service', () => {
         emit
       }
       const service = new TicketsService(ticketsRepo, servicesService, gateway)
-      await service.createTicket({ phoneId: '123456789', serviceId: '3f561b51-9520-43d8-b3dc-ff21a7990001' })
+      await service.createTicket({ phoneId: '123456789', serviceId: '3f561b51-9520-43d8-b3dc-ff21a7990002' })
       expect(await ticketsRepo.findOne({ where: { ticketNumber: 127 } })).toEqual(
         expect.objectContaining({
           phoneId: '123456789',
@@ -218,7 +261,7 @@ describe('Tickets service', () => {
         })
       )
       expect(emit).toHaveBeenCalledWith(
-        `${MESSAGES.ON_UPDATE_QUEUE}/${office.id}/${serv1.id}`,
+        `${MESSAGES.ON_UPDATE_QUEUE}/${office.id}/${serv2.id}`,
         expect.objectContaining({
           phoneId: '123456789',
           state: TicketState.CREATED,
