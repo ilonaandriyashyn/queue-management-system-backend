@@ -9,13 +9,21 @@ import { SocketGateway } from '../gateway/gateway'
 import { MESSAGES } from '../helpers/messages'
 import { TicketsService } from './tickets.service'
 import { Ticket, TicketState } from './ticket.entity'
+import { PrintersService } from '../printers/printers.service'
+import { Printer } from '../printers/printer.entity'
+import { OfficesService } from '../offices/offices.service'
+import { OrganizationsService } from '../organizations/organizations.service'
 
 describe('Tickets service', () => {
   let officesRepo: Repository<Office>
   let orgRepo: Repository<Organization>
   let servicesRepo: Repository<Service>
+  let printersRepo: Repository<Printer>
   let ticketsRepo: Repository<Ticket>
   let servicesService: ServicesService
+  let printersService: PrintersService
+  let officesService: OfficesService
+  let orgService: OrganizationsService
   let gateway: SocketGateway
 
   beforeEach(async () => {
@@ -24,7 +32,11 @@ describe('Tickets service', () => {
     orgRepo = dataSource.getRepository(Organization)
     servicesRepo = dataSource.getRepository(Service)
     ticketsRepo = dataSource.getRepository(Ticket)
+    printersRepo = dataSource.getRepository(Printer)
     servicesService = new ServicesService(servicesRepo)
+    orgService = new OrganizationsService(orgRepo)
+    officesService = new OfficesService(officesRepo, orgService, servicesService)
+    printersService = new PrintersService(printersRepo, officesService)
     gateway = new SocketGateway()
   })
 
@@ -35,7 +47,7 @@ describe('Tickets service', () => {
         name: 'Service 1'
       }
       await servicesRepo.save(serv1)
-      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
       await expect(
         service.createTicket({ phoneId: '12345678', serviceId: '3f561b51-9520-43d8-b3dc-ff21a7990001' })
       ).rejects.toThrow(BadRequestException)
@@ -47,7 +59,7 @@ describe('Tickets service', () => {
         name: 'Service 1'
       }
       await servicesRepo.save(serv1)
-      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
       await expect(
         service.createTicket({ phoneId: '12345678', serviceId: '3f561b51-9520-43d8-b3dc-ff21a7990001' })
       ).rejects.toThrow(BadRequestException)
@@ -70,7 +82,7 @@ describe('Tickets service', () => {
         office
       }
       await servicesRepo.save(serv1)
-      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
       await expect(
         service.createTicket({ phoneId: '12345678', serviceId: '3f561b51-9520-43d8-b3dc-ff21a7990001' })
       ).rejects.toThrow(BadRequestException)
@@ -140,7 +152,7 @@ describe('Tickets service', () => {
         service: serv1
       }
       await ticketsRepo.save([ticket1, ticket2, ticket3, ticket4, ticket5])
-      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
       await expect(
         service.createTicket({ phoneId: '123456789', serviceId: '3f561b51-9520-43d8-b3dc-ff21a7990001' })
       ).rejects.toThrow(BadRequestException)
@@ -178,7 +190,7 @@ describe('Tickets service', () => {
         service: serv1
       }
       await ticketsRepo.save(ticket1)
-      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
       await expect(
         service.createTicket({ phoneId: '123456789', serviceId: '3f561b51-9520-43d8-b3dc-ff21a7990001' })
       ).rejects.toThrow(BadRequestException)
@@ -251,7 +263,7 @@ describe('Tickets service', () => {
       gateway.server = {
         emit
       }
-      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
       await service.createTicket({ phoneId: '123456789', serviceId: '3f561b51-9520-43d8-b3dc-ff21a7990002' })
       expect(await ticketsRepo.findOne({ where: { ticketNumber: 127 } })).toEqual(
         expect.objectContaining({
@@ -282,7 +294,7 @@ describe('Tickets service', () => {
         state: TicketState.PROCESSING
       }
       await ticketsRepo.save(ticket1)
-      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
       await expect(service.removeTicket('3f561b51-9520-43d8-b3dc-ff21a7990001')).rejects.toThrow(BadRequestException)
     })
 
@@ -295,7 +307,7 @@ describe('Tickets service', () => {
         state: TicketState.CREATED
       }
       await ticketsRepo.save(ticket1)
-      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
       await expect(service.removeTicket('3f561b51-9520-43d8-b3dc-ff21a7990222')).rejects.toThrow(BadRequestException)
     })
 
@@ -308,7 +320,7 @@ describe('Tickets service', () => {
         state: TicketState.PROCESSING
       }
       await ticketsRepo.save(ticket1)
-      const service = new TicketsService(ticketsRepo, servicesService, gateway)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
       expect(await service.removeTicket('3f561b51-9520-43d8-b3dc-ff21a7990222')).toEqual({
         affected: 1,
         raw: []
@@ -371,7 +383,7 @@ describe('Tickets service', () => {
       service: serv1
     }
     await ticketsRepo.save([ticket1, ticket2, ticket3, ticket4, ticket5])
-    const service = new TicketsService(ticketsRepo, servicesService, gateway)
+    const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
     expect(
       await service.findCreatedTicketsByServices([
         '3f561b51-9520-43d8-b3dc-ff21a7990111',
@@ -435,7 +447,7 @@ describe('Tickets service', () => {
       service: serv1
     }
     await ticketsRepo.save([ticket1, ticket2, ticket3, ticket4, ticket5])
-    const service = new TicketsService(ticketsRepo, servicesService, gateway)
+    const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
     expect(await service.findAllTicketsByService('3f561b51-9520-43d8-b3dc-ff21a7990111')).toEqual([
       {
         ...ticket4,
@@ -529,7 +541,7 @@ describe('Tickets service', () => {
       service: serv1
     }
     await ticketsRepo.save([ticket1, ticket2, ticket3, ticket4, ticket5])
-    const service = new TicketsService(ticketsRepo, servicesService, gateway)
+    const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
     expect(await service.findTicketWithHighestNumberByOffice('3f561b51-9520-43d8-b3dc-ff21a799000d')).toEqual(ticket1)
   })
 
@@ -588,7 +600,7 @@ describe('Tickets service', () => {
       service: serv1
     }
     await ticketsRepo.save([ticket1, ticket2, ticket3, ticket4, ticket5])
-    const service = new TicketsService(ticketsRepo, servicesService, gateway)
+    const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
     expect(await service.findTicketByServiceAndDevice('3f561b51-9520-43d8-b3dc-ff21a7990111', '123')).toEqual({
       ...ticket1,
       counter: null
@@ -632,7 +644,7 @@ describe('Tickets service', () => {
       state: TicketState.CREATED
     }
     await ticketsRepo.save([ticket1, ticket2, ticket3, ticket4, ticket5])
-    const service = new TicketsService(ticketsRepo, servicesService, gateway)
+    const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
     expect(await service.findTicketsForDevice('123456789')).toEqual(4)
   })
 })

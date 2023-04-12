@@ -8,6 +8,7 @@ import { Service } from '../services/service.entity'
 import { SocketGateway } from '../gateway/gateway'
 import { MESSAGES } from '../helpers/messages'
 import { TicketLife } from '../offices/office.entity'
+import { PrintersService } from '../printers/printers.service'
 
 @Injectable()
 export class TicketsService {
@@ -15,7 +16,8 @@ export class TicketsService {
     @InjectRepository(Ticket)
     private readonly ticketsRepository: Repository<Ticket>,
     private readonly servicesService: ServicesService,
-    private readonly gateway: SocketGateway
+    private readonly gateway: SocketGateway,
+    private readonly printersService: PrintersService
   ) {}
 
   async createTicket(ticket: CreateTicketDto) {
@@ -35,6 +37,28 @@ export class TicketsService {
     const newTicketNumber = ticketWithHighestNumber === null ? 1 : ticketWithHighestNumber.ticketNumber + 1
     const newTicket = this.ticketsRepository.create({
       phoneId: ticket.phoneId,
+      ticketNumber: newTicketNumber,
+      service
+    })
+    await this.ticketsRepository.save(newTicket)
+    this.gateway.server.emit(`${MESSAGES.ON_UPDATE_QUEUE}/${service.id}`, {
+      ...newTicket,
+      counter: null
+    })
+  }
+
+  async createTicketFromPrinter(printerKey: string, serviceId: string) {
+    const service = await this.servicesService.findServiceByIdWithOffice(serviceId)
+    if (!service || !service.office || !service.office.organization) {
+      throw new BadRequestException()
+    }
+    const printer = await this.printersService.findPrinterByKey(printerKey)
+    if (printer === null || printer.office.id !== service.office.id) {
+      throw new BadRequestException()
+    }
+    const ticketWithHighestNumber = await this.findTicketWithHighestNumberByOffice(service.office.id)
+    const newTicketNumber = ticketWithHighestNumber === null ? 1 : ticketWithHighestNumber.ticketNumber + 1
+    const newTicket = this.ticketsRepository.create({
       ticketNumber: newTicketNumber,
       service
     })

@@ -7,30 +7,21 @@ import { OrganizationsService } from '../organizations/organizations.service'
 import { Service } from '../services/service.entity'
 import { ServicesService } from '../services/services.service'
 import { BadRequestException } from '@nestjs/common'
-import { TicketsService } from '../tickets/tickets.service'
-import { SocketGateway } from '../gateway/gateway'
-import { Ticket } from '../tickets/ticket.entity'
 
 describe('Offices service', () => {
   let officesRepo: Repository<Office>
   let orgRepo: Repository<Organization>
   let servicesRepo: Repository<Service>
-  let ticketsRepo: Repository<Ticket>
   let organizationsService: OrganizationsService
   let servicesService: ServicesService
-  let ticketsService: TicketsService
-  let gateway: SocketGateway
 
   beforeEach(async () => {
     const dataSource = await setupDataSource()
     officesRepo = dataSource.getRepository(Office)
     orgRepo = dataSource.getRepository(Organization)
     servicesRepo = dataSource.getRepository(Service)
-    ticketsRepo = dataSource.getRepository(Ticket)
     organizationsService = new OrganizationsService(orgRepo)
     servicesService = new ServicesService(servicesRepo)
-    gateway = new SocketGateway()
-    ticketsService = new TicketsService(ticketsRepo, servicesService, gateway)
   })
 
   describe('createOffice', () => {
@@ -44,7 +35,7 @@ describe('Offices service', () => {
         block: '111',
         organizationId: '3f561b51-9520-43d8-b3dc-ff21a799000d'
       }
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       await expect(service.createOffice(office)).rejects.toThrow(BadRequestException)
     })
 
@@ -63,7 +54,7 @@ describe('Offices service', () => {
         block: '111'
       }
       await orgRepo.save(organization)
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       expect(await service.createOffice({ ...office, organizationId })).toEqual(
         expect.objectContaining({
           ...office,
@@ -90,7 +81,7 @@ describe('Offices service', () => {
         block: '111'
       }
       await officesRepo.save({ ...office, organization: org })
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       expect(await service.findOfficeById('3f561b51-9520-43d8-b3dc-ff21a799000d')).toEqual(null)
     })
 
@@ -111,7 +102,7 @@ describe('Offices service', () => {
         ticketLife: TicketLife.HOURS24
       }
       await officesRepo.save({ ...office, organization: org })
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       expect(await service.findOfficeById('3f561b51-9520-43d8-b3dc-ff21a7990001')).toEqual(office)
     })
   })
@@ -138,7 +129,7 @@ describe('Offices service', () => {
         name: 'Service 1'
       })
       await servicesRepo.save({ ...serv1, office: { ...office1, organization: org } })
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       await expect(service.findOfficeServices('3f561b51-9520-43d8-b3dc-ff21a7990031')).rejects.toThrow(
         BadRequestException
       )
@@ -184,7 +175,7 @@ describe('Offices service', () => {
         { ...serv1, office: { ...office1, organization: org } },
         { ...serv2, office: { ...office2, organization: org } }
       ])
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       expect(await service.findOfficeServices('3f561b51-9520-43d8-b3dc-ff21a7990001')).toEqual([serv1])
     })
   })
@@ -201,7 +192,7 @@ describe('Offices service', () => {
         block: '111'
       }
       await officesRepo.save(office)
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       await expect(
         service.createService('3f561b51-9520-43d8-b3dc-ff21a7990001', { name: 'New Service' })
       ).rejects.toThrow(BadRequestException)
@@ -218,7 +209,7 @@ describe('Offices service', () => {
         block: '111'
       }
       await officesRepo.save(office)
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       expect(await service.createService('3f561b51-9520-43d8-b3dc-ff21a799000d', { name: 'New Service' })).toEqual(
         expect.objectContaining({
           name: 'New Service',
@@ -240,7 +231,7 @@ describe('Offices service', () => {
         block: '111'
       }
       await officesRepo.save(office)
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       await expect(
         service.setServices('3f561b51-9520-43d8-b3dc-ff21a7990001', [
           '3f561b51-9520-43d8-b3dc-ff21a7990111',
@@ -260,7 +251,7 @@ describe('Offices service', () => {
         block: '111'
       }
       await officesRepo.save(office)
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       expect(await service.setServices('3f561b51-9520-43d8-b3dc-ff21a799000d', [])).toEqual({ ...office, services: [] })
     })
 
@@ -287,7 +278,7 @@ describe('Offices service', () => {
         { ...serv1, office },
         { ...serv2, office }
       ])
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       await expect(
         service.setServices('3f561b51-9520-43d8-b3dc-ff21a799000d', ['3f5', '3f561b51-9520-43d8-b3dc-ff21a7990222'])
       ).rejects.toThrow(BadRequestException)
@@ -316,7 +307,7 @@ describe('Offices service', () => {
         { ...serv1, office },
         { ...serv2, office }
       ])
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       expect(
         await service.setServices('3f561b51-9520-43d8-b3dc-ff21a799000d', [
           '3f561b51-9520-43d8-b3dc-ff21a7990111',
@@ -338,7 +329,7 @@ describe('Offices service', () => {
         block: '111'
       }
       await officesRepo.save(office)
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       await expect(
         service.updateTicketLife('3f561b51-9520-43d8-b3dc-ff21a7990001', TicketLife.HOURS48)
       ).rejects.toThrow(BadRequestException)
@@ -356,7 +347,7 @@ describe('Offices service', () => {
         ticketLife: TicketLife.HOURS24
       }
       await officesRepo.save(office)
-      const service = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+      const service = new OfficesService(officesRepo, organizationsService, servicesService)
       expect(await service.updateTicketLife('3f561b51-9520-43d8-b3dc-ff21a799000d', TicketLife.HOURS48)).toEqual({
         ...office,
         ticketLife: TicketLife.HOURS48

@@ -13,17 +13,21 @@ import { SocketGateway } from '../gateway/gateway'
 import { CountersService } from './counters.service'
 import { Ticket, TicketState } from '../tickets/ticket.entity'
 import { MESSAGES } from '../helpers/messages'
+import { PrintersService } from '../printers/printers.service'
+import { Printer } from '../printers/printer.entity'
 
 describe('Counters service', () => {
   let countersRepo: Repository<Counter>
   let officesRepo: Repository<Office>
   let orgRepo: Repository<Organization>
+  let printersRepo: Repository<Printer>
   let servicesRepo: Repository<Service>
   let ticketsRepo: Repository<Ticket>
   let officesService: OfficesService
   let organizationsService: OrganizationsService
   let servicesService: ServicesService
   let ticketsService: TicketsService
+  let printersService: PrintersService
   let gateway: SocketGateway
 
   beforeEach(async () => {
@@ -33,11 +37,13 @@ describe('Counters service', () => {
     orgRepo = dataSource.getRepository(Organization)
     servicesRepo = dataSource.getRepository(Service)
     ticketsRepo = dataSource.getRepository(Ticket)
+    printersRepo = dataSource.getRepository(Printer)
     organizationsService = new OrganizationsService(orgRepo)
     servicesService = new ServicesService(servicesRepo)
     gateway = new SocketGateway()
-    ticketsService = new TicketsService(ticketsRepo, servicesService, gateway)
-    officesService = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+    printersService = new PrintersService(printersRepo, officesService)
+    officesService = new OfficesService(officesRepo, organizationsService, servicesService)
+    ticketsService = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
   })
 
   describe('createCounter', () => {

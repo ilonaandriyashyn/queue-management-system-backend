@@ -5,25 +5,19 @@ import { Service } from '../services/service.entity'
 import { ServicesService } from '../services/services.service'
 import { BadRequestException } from '@nestjs/common'
 import { Office } from '../offices/office.entity'
-import { SocketGateway } from '../gateway/gateway'
 import { Printer } from './printer.entity'
 import { PrintersService } from './printers.service'
 import { OfficesService } from '../offices/offices.service'
-import { Ticket } from '../tickets/ticket.entity'
 import { OrganizationsService } from '../organizations/organizations.service'
-import { TicketsService } from '../tickets/tickets.service'
 
 describe('Printers service', () => {
   let officesRepo: Repository<Office>
   let orgRepo: Repository<Organization>
   let servicesRepo: Repository<Service>
-  let ticketsRepo: Repository<Ticket>
   let officesService: OfficesService
   let organizationsService: OrganizationsService
   let servicesService: ServicesService
-  let ticketsService: TicketsService
   let printersRepo: Repository<Printer>
-  let gateway: SocketGateway
 
   beforeEach(async () => {
     const dataSource = await setupDataSource()
@@ -31,12 +25,9 @@ describe('Printers service', () => {
     orgRepo = dataSource.getRepository(Organization)
     servicesRepo = dataSource.getRepository(Service)
     printersRepo = dataSource.getRepository(Printer)
-    ticketsRepo = dataSource.getRepository(Ticket)
     organizationsService = new OrganizationsService(orgRepo)
     servicesService = new ServicesService(servicesRepo)
-    gateway = new SocketGateway()
-    ticketsService = new TicketsService(ticketsRepo, servicesService, gateway)
-    officesService = new OfficesService(officesRepo, organizationsService, servicesService, ticketsService, gateway)
+    officesService = new OfficesService(officesRepo, organizationsService, servicesService)
   })
 
   describe('createPrinter', () => {

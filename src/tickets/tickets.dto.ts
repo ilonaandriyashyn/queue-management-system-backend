@@ -12,6 +12,17 @@ export class CreateTicketDto {
   serviceId: string
 }
 
+export class CreateTicketFromPrinterDto {
+  @IsNotEmpty()
+  @IsUUID()
+  serviceId: string
+}
+
+export class CreateTicketFromPrinterHeadersDto {
+  @IsNotEmpty()
+  authorization: string
+}
+
 export class ServiceAndDeviceParams {
   @IsUUID()
   serviceId: string

@@ -11,6 +11,7 @@ import { GatewayModule } from './gateway/gateway.module'
 import { ScheduleModule } from '@nestjs/schedule'
 import { DevtoolsModule } from '@nestjs/devtools-integration'
 import { PrintersModule } from './printers/printers.module'
+import { ExpiredTicketsModule } from './expired-tickets/expired-tickets.module'
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PrintersModule } from './printers/printers.module'
     ServicesModule,
     CountersModule,
     TicketsModule,
+    ExpiredTicketsModule,
     GatewayModule,
     PrintersModule,
     TypeOrmModule.forRoot({

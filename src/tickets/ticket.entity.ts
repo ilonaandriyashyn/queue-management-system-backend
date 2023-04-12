@@ -20,7 +20,7 @@ export class Ticket {
   @CreateDateColumn()
   dateCreated: Date
 
-  @Column({ length: LENGTHS.MEDIUM })
+  @Column({ nullable: true, length: LENGTHS.MEDIUM })
   phoneId: string
 
   @Column({

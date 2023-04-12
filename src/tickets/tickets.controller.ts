@@ -1,5 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
-import { CreateTicketDto, PhoneIdParam, ServiceAndDeviceParams } from './tickets.dto'
+import { Body, Controller, Get, Headers, Param, Post } from '@nestjs/common'
+import {
+  CreateTicketDto,
+  CreateTicketFromPrinterDto,
+  CreateTicketFromPrinterHeadersDto,
+  PhoneIdParam,
+  ServiceAndDeviceParams
+} from './tickets.dto'
 import { TicketsService } from './tickets.service'
 import { IdParam } from '../helpers/dto'
 
@@ -35,5 +41,13 @@ export class TicketsController {
   @Post('create')
   createTicket(@Body() ticket: CreateTicketDto) {
     return this.ticketsService.createTicket(ticket)
+  }
+
+  @Post('printer/create')
+  createTicketFromPrinter(
+    @Headers() headers: CreateTicketFromPrinterHeadersDto,
+    @Body() ticket: CreateTicketFromPrinterDto
+  ) {
+    return this.ticketsService.createTicketFromPrinter(headers.authorization, ticket.serviceId)
   }
 }

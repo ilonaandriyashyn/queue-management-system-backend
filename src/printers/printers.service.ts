@@ -20,4 +20,8 @@ export class PrintersService {
     const printer = await this.printersRepository.create({ office })
     return this.printersRepository.save(printer)
   }
+
+  async findPrinterByKey(key: string) {
+    return this.printersRepository.findOne({ relations: ['office'], where: { key } })
+  }
 }
