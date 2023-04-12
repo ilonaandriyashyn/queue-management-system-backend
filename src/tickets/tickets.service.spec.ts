@@ -284,6 +284,230 @@ describe('Tickets service', () => {
     })
   })
 
+  describe('createTicketFromPrinter', () => {
+    test('service is not found', async () => {
+      const serv1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990555',
+        name: 'Service 1'
+      }
+      await servicesRepo.save(serv1)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
+      await expect(
+        service.createTicketFromPrinter('3f561b51-9520-43d8-b3dc-ff21a7990000', '3f561b51-9520-43d8-b3dc-ff21a7990001')
+      ).rejects.toThrow(BadRequestException)
+    })
+
+    test('service does not have office', async () => {
+      const serv1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990001',
+        name: 'Service 1'
+      }
+      await servicesRepo.save(serv1)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
+      await expect(
+        service.createTicketFromPrinter('3f561b51-9520-43d8-b3dc-ff21a7990000', '3f561b51-9520-43d8-b3dc-ff21a7990001')
+      ).rejects.toThrow(BadRequestException)
+    })
+
+    test('services office does not have organization', async () => {
+      const office = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
+        city: 'Prague',
+        street: 'Karlova',
+        countryCode: 'cz',
+        postCode: '13400',
+        building: '123',
+        block: '111'
+      }
+      await officesRepo.save(office)
+      const serv1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990001',
+        name: 'Service 1',
+        office
+      }
+      await servicesRepo.save(serv1)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
+      await expect(
+        service.createTicketFromPrinter('3f561b51-9520-43d8-b3dc-ff21a7990000', '3f561b51-9520-43d8-b3dc-ff21a7990001')
+      ).rejects.toThrow(BadRequestException)
+    })
+
+    test('printer is not found', async () => {
+      const organization = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000a',
+        name: 'Org 1'
+      }
+      await orgRepo.save(organization)
+      const office = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
+        city: 'Prague',
+        street: 'Karlova',
+        countryCode: 'cz',
+        postCode: '13400',
+        building: '123',
+        block: '111',
+        organization
+      }
+      await officesRepo.save(office)
+      const serv1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990001',
+        name: 'Service 1',
+        office
+      }
+      await servicesRepo.save(serv1)
+      const printer1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990000',
+        key: '3f561b51-9520-43d8-b3dc-ff21a7990020'
+      }
+      await printersRepo.save(printer1)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
+      await expect(
+        service.createTicketFromPrinter('3f561b51-9520-43d8-b3dc-ff21a7990000', '3f561b51-9520-43d8-b3dc-ff21a7990001')
+      ).rejects.toThrow(BadRequestException)
+    })
+
+    test('printer is from another office than service', async () => {
+      const organization = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000a',
+        name: 'Org 1'
+      }
+      await orgRepo.save(organization)
+      const office1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
+        city: 'Prague',
+        street: 'Karlova',
+        countryCode: 'cz',
+        postCode: '13400',
+        building: '123',
+        block: '111',
+        organization
+      }
+      const office2 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990009',
+        city: 'Prague',
+        street: 'Karlova',
+        countryCode: 'cz',
+        postCode: '13400',
+        building: '123',
+        block: '111',
+        organization
+      }
+      await officesRepo.save([office1, office2])
+      const serv1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990001',
+        name: 'Service 1',
+        office: office1
+      }
+      await servicesRepo.save(serv1)
+      const printer1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990020',
+        key: '3f561b51-9520-43d8-b3dc-ff21a7990000',
+        office: office2
+      }
+      await printersRepo.save(printer1)
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
+      await expect(
+        service.createTicketFromPrinter('3f561b51-9520-43d8-b3dc-ff21a7990000', '3f561b51-9520-43d8-b3dc-ff21a7990001')
+      ).rejects.toThrow(BadRequestException)
+    })
+
+    test('creates ticket', async () => {
+      const organization = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000a',
+        name: 'Org 1'
+      }
+      await orgRepo.save(organization)
+      const office = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a799000d',
+        city: 'Prague',
+        street: 'Karlova',
+        countryCode: 'cz',
+        postCode: '13400',
+        building: '123',
+        block: '111',
+        organization
+      }
+      await officesRepo.save(office)
+      const serv1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990001',
+        name: 'Service 1',
+        office
+      }
+      const serv2 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990002',
+        name: 'Service 2',
+        office
+      }
+      await servicesRepo.save([serv1, serv2])
+      const printer1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990020',
+        key: '3f561b51-9520-43d8-b3dc-ff21a7990000',
+        office
+      }
+      await printersRepo.save(printer1)
+      const ticket1 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990222',
+        ticketNumber: 123,
+        dateCreated: '2022-07-13T18:16:01.933Z',
+        phoneId: '123456789',
+        state: TicketState.PROCESSING,
+        service: serv1
+      }
+      const ticket2 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990223',
+        ticketNumber: 124,
+        dateCreated: '2022-07-13T18:47:01.933Z',
+        phoneId: '123456789',
+        state: TicketState.CREATED,
+        service: serv1
+      }
+      const ticket3 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990224',
+        ticketNumber: 125,
+        dateCreated: '2022-07-13T18:18:01.933Z',
+        phoneId: '123456789',
+        state: TicketState.CREATED,
+        service: serv1
+      }
+      const ticket4 = {
+        id: '3f561b51-9520-43d8-b3dc-ff21a7990225',
+        ticketNumber: 126,
+        dateCreated: '2022-07-13T18:38:01.933Z',
+        phoneId: '123456789',
+        state: TicketState.CREATED,
+        service: serv1
+      }
+      await ticketsRepo.save([ticket1, ticket2, ticket3, ticket4])
+      gateway = new SocketGateway()
+      const emit = jest.fn()
+      // @ts-expect-error no need to mock everything
+      gateway.server = {
+        emit
+      }
+      const service = new TicketsService(ticketsRepo, servicesService, gateway, printersService)
+      await service.createTicketFromPrinter(
+        '3f561b51-9520-43d8-b3dc-ff21a7990000',
+        '3f561b51-9520-43d8-b3dc-ff21a7990002'
+      )
+      expect(await ticketsRepo.findOne({ where: { ticketNumber: 127 } })).toEqual(
+        expect.objectContaining({
+          phoneId: null,
+          state: TicketState.CREATED,
+          ticketNumber: 127
+        })
+      )
+      expect(emit).toHaveBeenCalledWith(
+        `${MESSAGES.ON_UPDATE_QUEUE}/${serv2.id}`,
+        expect.objectContaining({
+          phoneId: null,
+          state: TicketState.CREATED,
+          ticketNumber: 127,
+          counter: null
+        })
+      )
+    })
+  })
+
   describe('removeTicket', () => {
     test('ticket is not found', async () => {
       const ticket1 = {
