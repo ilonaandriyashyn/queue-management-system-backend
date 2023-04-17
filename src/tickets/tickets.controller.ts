@@ -8,7 +8,9 @@ import {
 } from './tickets.dto'
 import { TicketsService } from './tickets.service'
 import { IdParam } from '../helpers/dto'
+import { ApiHeader, ApiTags } from '@nestjs/swagger'
 
+@ApiTags('tickets')
 @Controller('tickets')
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
@@ -43,6 +45,10 @@ export class TicketsController {
     return this.ticketsService.createTicket(ticket)
   }
 
+  @ApiHeader({
+    name: 'authorization',
+    description: "Printer's key"
+  })
   @Post('printer/create')
   createTicketFromPrinter(
     @Headers() headers: CreateTicketFromPrinterHeadersDto,

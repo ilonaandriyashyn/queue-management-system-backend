@@ -2,7 +2,9 @@ import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common'
 import { CreateCounterDto, UpdateCounterServicesDto } from './counters.dto'
 import { CountersService } from './counters.service'
 import { IdParam } from '../helpers/dto'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('counters')
 @Controller('counters')
 export class CountersController {
   constructor(private readonly countersService: CountersService) {}

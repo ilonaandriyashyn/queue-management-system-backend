@@ -2,11 +2,16 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common'
 import { OrganizationsService } from './organizations.service'
 import { CreateOrganizationDto } from './organizations.dto'
 import { IdParam } from '../helpers/dto'
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { Organization } from './organization.entity'
+import { ArrayType } from 'pg-mem/types/datatypes'
 
+@ApiTags('organizations')
 @Controller('organizations')
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
+  @ApiOkResponse({ type: Organization, isArray: true })
   @Get()
   getOrganizations() {
     return this.organizationsService.findOrganizations()

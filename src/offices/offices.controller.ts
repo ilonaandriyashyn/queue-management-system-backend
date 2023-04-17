@@ -3,7 +3,9 @@ import { CreateOfficeDto, CreateServiceDto, UpdateOfficeServicesDto } from './of
 import { OfficesService } from './offices.service'
 import { TicketLife } from './office.entity'
 import { IdParam } from '../helpers/dto'
+import { ApiTags } from '@nestjs/swagger'
 
+@ApiTags('offices')
 @Controller('offices')
 export class OfficesController {
   constructor(private readonly officesService: OfficesService) {}

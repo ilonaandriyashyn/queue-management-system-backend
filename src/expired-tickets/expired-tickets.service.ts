@@ -20,7 +20,6 @@ export class ExpiredTicketsService {
   // })
   @Timeout(1000)
   async handleRemoveExpiredTickets() {
-    console.log('nbhfdbjf')
     const offices = await this.officesService.findAllOfficesWithServices()
     const ticketsToRemove: {
       [key: string]: Ticket[]
