@@ -7,7 +7,7 @@ export class PrintersController {
   constructor(private readonly printersService: PrintersService) {}
 
   @Post('create')
-  createTicket(@Body() printer: CreatePrinterDto) {
+  createPrinter(@Body() printer: CreatePrinterDto) {
     return this.printersService.createPrinter(printer.officeId)
   }
 }
