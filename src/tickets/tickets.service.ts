@@ -95,15 +95,14 @@ export class TicketsService {
       .getMany()
   }
 
-  // TODO do we need order by here? If not fix in text as well.
   async findCreatedTicketsByServicesAndDate(serviceIds: string[], ticketLife: TicketLife) {
     return this.ticketsRepository
       .createQueryBuilder('tickets')
       .leftJoinAndSelect('tickets.service', 'service')
+      .leftJoinAndSelect('tickets.counter', 'counter')
       .where('service.id IN (:...serviceIds)', { serviceIds })
       .andWhere('tickets.state=:ticketState', { ticketState: TicketState.CREATED })
       .andWhere("(tickets.dateCreated + INTERVAL '1 hour' * :ticketLife)<=NOW()", { ticketLife })
-      .orderBy('tickets.dateCreated', 'ASC')
       .getMany()
   }
 

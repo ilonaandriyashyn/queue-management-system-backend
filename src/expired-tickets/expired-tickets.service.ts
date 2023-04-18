@@ -15,10 +15,10 @@ export class ExpiredTicketsService {
   ) {}
 
   // every hour, at the start of the 10th minute
-  // @Cron('0 10 * * * *', {
-  //   name: 'removeExpiredTickets'
-  // })
-  @Timeout(1000)
+  // @Timeout(1000)
+  @Cron('0 10 * * * *', {
+    name: 'removeExpiredTickets'
+  })
   async handleRemoveExpiredTickets() {
     const offices = await this.officesService.findAllOfficesWithServices()
     const ticketsToRemove: {
