@@ -9,6 +9,15 @@ export class SocketGateway implements OnModuleInit {
   @WebSocketServer()
   server: Server
 
+  constructor() {
+    this.server = new Server({
+      connectionStateRecovery: {
+        maxDisconnectionDuration: 2 * 60 * 1000,
+        skipMiddlewares: true
+      }
+    })
+  }
+
   onModuleInit() {
     this.server.on('connection', (socket) => {
       console.log('Connected', socket.id)
