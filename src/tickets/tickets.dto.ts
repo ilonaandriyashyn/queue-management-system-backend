@@ -34,12 +34,14 @@ export class ServiceAndDeviceParams {
   serviceId: string
 
   @ApiProperty({ example: 'YYYYYYYY-YYYY-YYYY-YYYY-YYYYYYYYYYYY' })
-  @IsUUID()
+  @IsString()
+  @IsNotEmpty()
   phoneId: string
 }
 
 export class PhoneIdParam {
   @ApiProperty({ example: 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX' })
-  @IsUUID()
+  @IsString()
+  @IsNotEmpty()
   phoneId: string
 }
