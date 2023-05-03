@@ -31,7 +31,6 @@ export class CreateOfficeDto {
   @IsNotEmpty()
   @IsString()
   @MaxLength(LENGTHS.SHORT)
-  // TODO @IsPostalCode(locale?: string)
   postCode: string
 
   @ApiProperty({ example: 'CZ' })

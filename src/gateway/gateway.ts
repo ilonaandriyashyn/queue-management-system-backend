@@ -2,8 +2,6 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from
 import { Server } from 'socket.io'
 import { OnModuleInit } from '@nestjs/common'
 
-// @WebSocketGateway({ cors: { origin: 'http://localhost:3001' } })
-// TODO probably specify which port
 @WebSocketGateway({ cors: true })
 export class SocketGateway implements OnModuleInit {
   @WebSocketServer()
@@ -27,9 +25,7 @@ export class SocketGateway implements OnModuleInit {
     })
   }
 
-  // TODO I probably do not need this
   @SubscribeMessage('newTicket')
-  // TODO change unknown
   onNewTicket(@MessageBody() body: unknown) {
     console.log(body)
     this.server.emit('onQueueUpdate', {
